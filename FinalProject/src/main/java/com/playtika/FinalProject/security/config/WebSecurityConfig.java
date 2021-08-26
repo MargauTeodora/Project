@@ -35,10 +35,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http.csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
         // Endpoints
         http.authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMIN")
@@ -48,6 +46,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // If a user try to access a resource without having enough permissions
         http.exceptionHandling().accessDeniedPage("/accessDeniedPage");
 
+        http.logout()
+                .logoutUrl("/logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID");
         // Apply JWT
         http.apply(new JwtTokenFilterConfigurer(jwtTokenService));
     }
@@ -58,6 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .ignoring()
                 .antMatchers("/login")//
                 .antMatchers("/register")
+                .antMatchers("/logout")
                 .and()
                 .ignoring();
     }

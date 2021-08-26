@@ -12,7 +12,7 @@
 	<artifactId>FinalProject</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>FinalProject</name>
-	<description>Final Project Descriptionn</description>
+	<description>Final Project Description</description>
 	<properties>
 		<java.version>16</java.version>
 	</properties>

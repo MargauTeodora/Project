@@ -10,7 +10,7 @@ public class UpdateUserDTO {
     private String username;
     private String lastName;
     private String password;
-    private List<Role> roles=new ArrayList<>();
+    private List<Role> roles;
 
     public String getFirstName() {
         return firstName;

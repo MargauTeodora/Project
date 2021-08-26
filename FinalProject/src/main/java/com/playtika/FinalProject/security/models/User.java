@@ -3,6 +3,8 @@ package com.playtika.FinalProject.security.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -28,7 +30,7 @@ public class User {
     private String password;
 
 
-    @JsonIgnore
+
     @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
@@ -90,12 +92,5 @@ public class User {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
-        if(roles.contains(new Role(RoleType.ROLE_ADMIN.name()))){
-            this.roles.add(new Role(RoleType.ROLE_REGULAR_USER.name()));
-            this.roles.add(new Role(RoleType.ROLE_MANAGER.name()));
-        }else if(roles.contains(new Role(RoleType.ROLE_MANAGER.name()))){
-            this.roles.add(new Role(RoleType.ROLE_REGULAR_USER.name()));
-        }
-
     }
 }

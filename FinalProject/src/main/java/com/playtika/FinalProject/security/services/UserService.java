@@ -26,6 +26,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -89,7 +90,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User signUp(SignUpRequest request) {
-        if(userRepository.existsByUsername(request.getUserName())){
+        if (userRepository.existsByUsername(request.getUserName())) {
             throw new AuthenticationCustomException("User already exists in system", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
@@ -109,41 +110,55 @@ public class UserService implements UserDetailsService {
 
 
     public void removeUser(String userName) {
-        User actualUser=userRepository.findByUsername(getActualUserName());
-        if(actualUser.getRoles().contains(new Role(RoleType.ROLE_ADMIN.name()))){
-            if(!userRepository.existsByUsername(userName)){
+        User actualUser = userRepository.findByUsername(getActualUserName());
+        if (actualUser.getRoles().contains(new Role(RoleType.ROLE_ADMIN.name()))) {
+            if (!userRepository.existsByUsername(userName)) {
                 throw new RuntimeException("User given for delete doesn't exists");
             }
             userRepository.deleteByUsername(userName);
             logger.info("User remove successfully");
-        }else{
+        } else {
             throw new NotAuthorizedException();
         }
     }
 
     public void updateUser(UpdateUserDTO userFromBody) {
-        User actualUser=userRepository.findByUsername(getActualUserName());
-        if(actualUser.getRoles().contains(new Role(RoleType.ROLE_ADMIN.name()))){
-            if(userFromBody==null||userRepository.existsByUsername(userFromBody.getUsername())){
-                throw new RuntimeException("User given for update doesn't exists");
+        User actualUser = userRepository.findByUsername(getActualUserName());
+
+        logger.info("Hi there???");
+        if (actualUser.getRoles().contains(new Role(RoleType.ROLE_ADMIN.name()))) {
+            if (userFromBody == null ||userRepository.findByUsername(userFromBody.getUsername())==null) {
+                    throw new RuntimeException("User given for update doesn't exists");
             }
-            User userToUpdate=userRepository.findByUsername(userFromBody.getUsername());
-            if(userFromBody.getFirstName()!=null){
+            User userToUpdate = userRepository.findByUsername(userFromBody.getUsername());
+            if (userFromBody.getFirstName() != null) {
                 userToUpdate.setFirstName(userFromBody.getFirstName());
             }
-            if(userFromBody.getPassword()!=null){
-                userToUpdate.setPassword( passwordEncoder.encode(userFromBody.getPassword()));
+            if (userFromBody.getPassword() != null) {
+                userToUpdate.setPassword(passwordEncoder.encode(userFromBody.getPassword()));
             }
-            if(userFromBody.getLastName()!=null){
+            if (userFromBody.getLastName() != null) {
                 userToUpdate.setLastName(userFromBody.getLastName());
             }
-            if(userFromBody.getRoles()!=null){
-                userToUpdate.setRoles(userFromBody.getRoles());
+            if (userFromBody.getRoles() != null) {
+                List<Role> roles = new ArrayList<>();
+                logger.info("-------------------"+userFromBody.getRoles().contains(roleRepository.findByName(RoleType.ROLE_ADMIN.name()))+"------------");
+                if (userFromBody.getRoles().contains(roleRepository.findByName(RoleType.ROLE_ADMIN.name()))) {
+                    roles.add(roleRepository.findByName(RoleType.ROLE_MANAGER.name()));
+                    roles.add(roleRepository.findByName(RoleType.ROLE_ADMIN.name()));
+                }
+                else if (userFromBody.getRoles().contains(roleRepository.findByName(RoleType.ROLE_MANAGER.name()))) {
+                    roles.add(roleRepository.findByName(RoleType.ROLE_MANAGER.name()));
+                }
+                    roles.add(roleRepository.findByName(RoleType.ROLE_REGULAR_USER.name()));
+
+                roleRepository.saveAll(roles);
+                userToUpdate.setRoles(roles);
             }
             userToUpdate = userRepository.saveAndFlush(userToUpdate);
             this.userRepository.saveAndFlush(userToUpdate);
-            logger.info("User remove successfully");
-        }else{
+            logger.info("User updated successfully");
+        } else {
             throw new NotAuthorizedException();
         }
     }
@@ -165,7 +180,8 @@ public class UserService implements UserDetailsService {
     public String refreshToken(String userName) {
         return jwtTokenService.createToken(userName, userRepository.findByUsername(userName).getRoles());
     }
-    private String getActualUserName(){
+
+    private String getActualUserName() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getName();
     }

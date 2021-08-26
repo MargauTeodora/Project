@@ -1,5 +1,6 @@
 package com.playtika.FinalProject.security.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -13,9 +14,9 @@ public class Role implements GrantedAuthority{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
+    @Column(unique = true)
     private String name;
-
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
 

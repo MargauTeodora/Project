@@ -1,10 +1,7 @@
 package com.playtika.FinalProject.controllers;
 import com.playtika.FinalProject.exceptions.AuthenticationCustomException;
 import com.playtika.FinalProject.exceptions.NotAuthorizedException;
-import com.playtika.FinalProject.security.dto.LoginRequest;
-import com.playtika.FinalProject.security.dto.LoginResponse;
-import com.playtika.FinalProject.security.dto.SignUpRequest;
-import com.playtika.FinalProject.security.dto.UserDTO;
+import com.playtika.FinalProject.security.dto.*;
 import com.playtika.FinalProject.security.models.Role;
 import com.playtika.FinalProject.security.models.RoleType;
 import com.playtika.FinalProject.security.models.User;
@@ -43,7 +40,8 @@ public class UserController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<String> signUp(HttpServletRequest requestHeader, @RequestBody SignUpRequest request) throws RuntimeException {
+    public ResponseEntity<String> signUp(HttpServletRequest requestHeader,
+                                         @RequestBody SignUpRequest request) throws RuntimeException {
         User user;
         try {
             user = userService.signUp(request);
@@ -64,18 +62,16 @@ public class UserController {
         return new ResponseEntity<>(userName, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/update")
+    @PatchMapping(value = "/update")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    public ResponseEntity<String> updateUser(@RequestParam String userName,@RequestBody User role) throws RuntimeException {
+    public ResponseEntity<String> updateUser(@RequestBody UpdateUserDTO user) throws RuntimeException {
         try {
-            userService.updateUser(userName);
+            userService.updateUser(user);
         } catch (Exception e) {
             throw e;
         }
-        return new ResponseEntity<>(userName, HttpStatus.OK);
+        return new ResponseEntity<>(user.getUsername(), HttpStatus.OK);
     }
-
-
 
     @GetMapping(value = "/users")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -87,20 +83,20 @@ public class UserController {
         }
 
     }
-
-    @GetMapping(value = "/search")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public ResponseEntity<UserDTO> searchUser(@RequestParam String userName) throws RuntimeException {
-
-        UserDTO userResponse = userService.searchUser(userName);
-        return new ResponseEntity<>(userResponse, HttpStatus.OK);
-    }
-
-    @GetMapping("/refresh")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public String refreshToken(HttpServletRequest req) {
-        return userService.refreshToken(req.getRemoteUser());
-    }
+//
+//    @GetMapping(value = "/search")
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+//    public ResponseEntity<UserDTO> searchUser(@RequestParam String userName) throws RuntimeException {
+//
+//        UserDTO userResponse = userService.searchUser(userName);
+//        return new ResponseEntity<>(userResponse, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/refresh")
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+//    public String refreshToken(HttpServletRequest req) {
+//        return userService.refreshToken(req.getRemoteUser());
+//    }
 
 
     @ExceptionHandler

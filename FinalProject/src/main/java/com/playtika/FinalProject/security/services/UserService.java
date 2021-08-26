@@ -4,6 +4,7 @@ import com.playtika.FinalProject.exceptions.AuthenticationCustomException;
 import com.playtika.FinalProject.exceptions.NotAuthorizedException;
 import com.playtika.FinalProject.security.dto.LoginResponse;
 import com.playtika.FinalProject.security.dto.SignUpRequest;
+import com.playtika.FinalProject.security.dto.UpdateUserDTO;
 import com.playtika.FinalProject.security.dto.UserDTO;
 import com.playtika.FinalProject.security.models.Role;
 import com.playtika.FinalProject.security.models.RoleType;
@@ -101,9 +102,8 @@ public class UserService implements UserDetailsService {
         user.setRoles(Arrays.asList(roleRepository.findByName(RoleType.ROLE_REGULAR_USER.name())));
         request.setPassword(user.getPassword());
 
-        user = userRepository.save(user);
+        user = userRepository.saveAndFlush(user);
         logger.info("Register successfully");
-
         return user;
     }
 
@@ -121,13 +121,27 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void updateUser(String userName) {
+    public void updateUser(UpdateUserDTO userFromBody) {
         User actualUser=userRepository.findByUsername(getActualUserName());
         if(actualUser.getRoles().contains(new Role(RoleType.ROLE_ADMIN.name()))){
-            if(!userRepository.existsByUsername(userName)){
-                throw new RuntimeException("User given for delete doesn't exists");
+            if(userFromBody==null||userRepository.existsByUsername(userFromBody.getUsername())){
+                throw new RuntimeException("User given for update doesn't exists");
             }
-            userRepository.updateByUsername(userName);
+            User userToUpdate=userRepository.findByUsername(userFromBody.getUsername());
+            if(userFromBody.getFirstName()!=null){
+                userToUpdate.setFirstName(userFromBody.getFirstName());
+            }
+            if(userFromBody.getPassword()!=null){
+                userToUpdate.setPassword( passwordEncoder.encode(userFromBody.getPassword()));
+            }
+            if(userFromBody.getLastName()!=null){
+                userToUpdate.setLastName(userFromBody.getLastName());
+            }
+            if(userFromBody.getRoles()!=null){
+                userToUpdate.setRoles(userFromBody.getRoles());
+            }
+            userToUpdate = userRepository.saveAndFlush(userToUpdate);
+            this.userRepository.saveAndFlush(userToUpdate);
             logger.info("User remove successfully");
         }else{
             throw new NotAuthorizedException();

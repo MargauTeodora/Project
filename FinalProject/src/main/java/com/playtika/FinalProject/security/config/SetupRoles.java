@@ -69,6 +69,7 @@ public class SetupRoles implements ApplicationListener<ContextRefreshedEvent> {
             user.setPassword(passwordEncoder.encode(password));
             user.setEmail(email);
         }
+        user = userRepository.saveAndFlush(user);
         user.setRoles(roles);
         user = userRepository.save(user);
         return user;

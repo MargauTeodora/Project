@@ -90,7 +90,12 @@ public class User {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+        if(roles.contains(new Role(RoleType.ROLE_ADMIN.name()))){
+            this.roles.add(new Role(RoleType.ROLE_REGULAR_USER.name()));
+            this.roles.add(new Role(RoleType.ROLE_MANAGER.name()));
+        }else if(roles.contains(new Role(RoleType.ROLE_MANAGER.name()))){
+            this.roles.add(new Role(RoleType.ROLE_REGULAR_USER.name()));
+        }
+
     }
-
-
 }

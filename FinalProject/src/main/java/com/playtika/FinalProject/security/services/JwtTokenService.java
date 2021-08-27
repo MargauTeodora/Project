@@ -1,13 +1,13 @@
 package com.playtika.FinalProject.security.services;
 
-import com.playtika.FinalProject.exceptions.AuthenticationCustomException;
+import com.playtika.FinalProject.exceptions.UserException;
+import com.playtika.FinalProject.exceptions.customErrors.ErrorCode;
 import com.playtika.FinalProject.security.models.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -78,7 +78,7 @@ public class JwtTokenService {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            throw new AuthenticationCustomException("Expired or invalid JWT token", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new UserException(ErrorCode.INVALID_TOKEN);
         }
     }
 }

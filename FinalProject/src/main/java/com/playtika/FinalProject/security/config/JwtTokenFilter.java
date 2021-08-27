@@ -1,6 +1,6 @@
 package com.playtika.FinalProject.security.config;
 
-import com.playtika.FinalProject.exceptions.AuthenticationCustomException;
+import com.playtika.FinalProject.exceptions.UserException;
 import com.playtika.FinalProject.security.services.JwtTokenService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,9 +30,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Authentication auth = jwtTokenService.validateUser(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
-        } catch (AuthenticationCustomException ex) {
+        } catch (UserException ex) {
             SecurityContextHolder.clearContext();
-            httpServletResponse.sendError(ex.getHttpStatus().value(), ex.getMessage());
+//            httpServletResponse.sendError(ex.get().value(), ex.getMessage());
             return;
         }
 

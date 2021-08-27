@@ -9,23 +9,26 @@ public class LoginResponse {
         return userName;
     }
 
-    public void setUserName(String userName) {
+    public LoginResponse setUserName(String userName) {
         this.userName = userName;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public LoginResponse setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     public String getAccessToken() {
         return accessToken;
     }
 
-    public void setAccessToken(String accessToken) {
+    public LoginResponse setAccessToken(String accessToken) {
         this.accessToken = accessToken;
+        return this;
     }
 }

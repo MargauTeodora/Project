@@ -1,16 +1,14 @@
 package com.playtika.FinalProject.security.dto;
 
-import com.playtika.FinalProject.security.models.Role;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.playtika.FinalProject.security.models.RoleType;
 
 public class UpdateUserDTO {
     private String firstName;
     private String username;
     private String lastName;
     private String password;
-    private List<Role> roles;
+//    private List<Role> roles;
+    private RoleType role;
 
     public String getFirstName() {
         return firstName;
@@ -40,19 +38,23 @@ public class UpdateUserDTO {
         this.password = password;
     }
 
-    public List<Role> getRoles() {
-        return roles;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    public RoleType getRole() {
+        return role;
     }
 
-    public UpdateUserDTO(String firstName, String lastName, String password, List<Role> roles) {
+    public void setRole(RoleType role) {
+        this.role = role;
+    }
+
+    public UpdateUserDTO(String firstName, String lastName, String password, RoleType role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
-        this.roles = roles;
+        this.role = role;
     }
 
     public UpdateUserDTO() {

@@ -1,7 +1,7 @@
 package com.playtika.FinalProject.controllers;
 
-import com.playtika.FinalProject.exceptions.AuthenticationCustomException;
-import com.playtika.FinalProject.exceptions.NotAuthorizedException;
+import com.playtika.FinalProject.exceptions.UserException;
+import com.playtika.FinalProject.exceptions.customErrors.ErrorMessage;
 import com.playtika.FinalProject.security.dto.*;
 import com.playtika.FinalProject.security.models.User;
 import com.playtika.FinalProject.security.services.UserService;
@@ -34,7 +34,7 @@ public class UserController {
             } else {
                 return new ResponseEntity<>(loginResponse, HttpStatus.OK);
             }
-        } catch (AuthenticationCustomException ex) {
+        } catch (UserException ex) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
@@ -74,7 +74,7 @@ public class UserController {
         } catch (Exception e) {
             throw e;
         }
-        return new ResponseEntity<>(user.getRoles().get(0).getName(), HttpStatus.OK);
+        return new ResponseEntity<>(user.getRole().name(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/users")
@@ -85,17 +85,25 @@ public class UserController {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    @GetMapping(value = "/info")
+    @PreAuthorize("hasRole('ROLE_REGULAR_USER')")
+    public ResponseEntity<User> getUserInfo() throws RuntimeException {
+        try {
+            return new ResponseEntity<>(userService.getUserInfo(), HttpStatus.OK);
+        } catch (Exception e) {
+            throw e;
+        }
 
     }
+
     @ExceptionHandler
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public ResponseEntity handleExceptions(Exception ex) {
-        if (ex instanceof AuthenticationCustomException) {
-            return ResponseEntity.status(((AuthenticationCustomException) ex).getHttpStatus()).build();
-        }
-        if (ex instanceof NotAuthorizedException) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).build();
+    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
+    public ErrorMessage handleException(UserException ex) {
+        ErrorMessage errorMessage
+                = new ErrorMessage(ex.getUserErrorCode().getMessage(),
+                ex.getUserErrorCode().getCode());
+        return errorMessage;
     }
 }

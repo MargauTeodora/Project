@@ -2,7 +2,8 @@ package com.playtika.FinalProject.security.services;
 
 import com.playtika.FinalProject.exceptions.UserException;
 import com.playtika.FinalProject.exceptions.customErrors.ErrorCode;
-import com.playtika.FinalProject.security.models.Role;
+import com.playtika.FinalProject.models.Role;
+import com.playtika.FinalProject.services.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

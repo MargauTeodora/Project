@@ -1,4 +1,4 @@
-package com.playtika.FinalProject.security.dto;
+package com.playtika.FinalProject.models.dto;
 
 public class SignUpRequest {
     private String userName;

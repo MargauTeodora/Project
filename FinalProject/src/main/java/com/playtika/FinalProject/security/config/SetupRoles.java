@@ -1,10 +1,10 @@
 package com.playtika.FinalProject.security.config;
 
-import com.playtika.FinalProject.security.models.Role;
-import com.playtika.FinalProject.security.models.RoleType;
-import com.playtika.FinalProject.security.models.User;
-import com.playtika.FinalProject.security.repositories.RoleRepository;
-import com.playtika.FinalProject.security.repositories.UserRepository;
+import com.playtika.FinalProject.models.Role;
+import com.playtika.FinalProject.models.RoleType;
+import com.playtika.FinalProject.models.User;
+import com.playtika.FinalProject.repositories.RoleRepository;
+import com.playtika.FinalProject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;

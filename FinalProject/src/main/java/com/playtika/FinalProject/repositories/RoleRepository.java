@@ -1,7 +1,7 @@
-package com.playtika.FinalProject.security.repositories;
+package com.playtika.FinalProject.repositories;
 
 
-import com.playtika.FinalProject.security.models.Role;
+import com.playtika.FinalProject.models.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {

@@ -1,4 +1,4 @@
-package com.playtika.FinalProject.security.models;
+package com.playtika.FinalProject.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;

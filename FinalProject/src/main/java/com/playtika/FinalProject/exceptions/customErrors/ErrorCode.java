@@ -8,7 +8,8 @@ public enum ErrorCode {
     NO_DELETE_USER(102,"User given for delete doesn't exists"),
     NOT_AUTHORIZED(103,"You should be logged to do this operation!"),
     NO_UPDATE_USER(104,"User given for update doesn't exists"),
-    INVALID_TOKEN(105,"Token is not available");
+    INVALID_TOKEN(105,"Token is not available"),
+    INCOMPLETE_DATA(106,"Data is not completed ");
 
 
     private int code;

@@ -1,10 +1,14 @@
 package com.playtika.FinalProject.controllers;
 
 import com.playtika.FinalProject.exceptions.UserException;
+import com.playtika.FinalProject.exceptions.customErrors.ErrorCode;
 import com.playtika.FinalProject.exceptions.customErrors.ErrorMessage;
-import com.playtika.FinalProject.security.dto.*;
-import com.playtika.FinalProject.security.models.User;
-import com.playtika.FinalProject.security.services.UserService;
+import com.playtika.FinalProject.models.dto.LoginRequest;
+import com.playtika.FinalProject.models.dto.LoginResponse;
+import com.playtika.FinalProject.models.dto.SignUpRequest;
+import com.playtika.FinalProject.models.dto.UpdateUserDTO;
+import com.playtika.FinalProject.models.User;
+import com.playtika.FinalProject.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +30,11 @@ public class UserController {
 
     @GetMapping
     @RequestMapping("/login")
-    public ResponseEntity<LoginResponse> login(HttpServletRequest requestHeader, @RequestBody LoginRequest request) throws RuntimeException {
+    public ResponseEntity login( @RequestBody LoginRequest request) throws RuntimeException {
         try {
             LoginResponse loginResponse = userService.login(request.getUserName(), request.getPassword());
             if (loginResponse == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+               throw new UserException(ErrorCode.INCOMPLETE_DATA);
             } else {
                 return new ResponseEntity<>(loginResponse, HttpStatus.OK);
             }
@@ -66,11 +70,8 @@ public class UserController {
     @PatchMapping(value = "/update")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     public ResponseEntity<String> updateUser(@RequestBody UpdateUserDTO user) throws RuntimeException {
-        logger.info("UPDATE");
         try {
-            logger.info("update2");
             userService.updateUser(user);
-            logger.info("UPDATE3");
         } catch (Exception e) {
             throw e;
         }
@@ -86,6 +87,18 @@ public class UserController {
             throw e;
         }
     }
+//    /accessDeniedPage
+//    @GetMapping(value = "/info")
+//    @PreAuthorize("hasRole('ROLE_REGULAR_USER')")
+//    public ResponseEntity<User> getUserInfo() throws RuntimeException {
+//        try {
+//            return new ResponseEntity<>(userService.getUserInfo(), HttpStatus.OK);
+//        } catch (Exception e) {
+//            throw e;
+//        }
+//
+//    }
+
 
     @GetMapping(value = "/info")
     @PreAuthorize("hasRole('ROLE_REGULAR_USER')")
@@ -101,9 +114,7 @@ public class UserController {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
     public ErrorMessage handleException(UserException ex) {
-        ErrorMessage errorMessage
-                = new ErrorMessage(ex.getUserErrorCode().getMessage(),
+        return  new ErrorMessage(ex.getUserErrorCode().getMessage(),
                 ex.getUserErrorCode().getCode());
-        return errorMessage;
     }
 }

@@ -1,44 +1,15 @@
-package com.playtika.FinalProject.models;
+package com.playtika.FinalProject.models.dto;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
-import javax.persistence.*;
+import com.playtika.FinalProject.models.User;
 import java.sql.Time;
 import java.util.Date;
 
-
-@Entity
-@Table(name = "gameSessions")
-public class GameSession {
-
-    @Id()
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class AddNewGameSessionDTO {
     private long id;
-
-    @Column(name = "game_name")
     private String gameName;
-
-    @Column(name = "start_date")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date startDate;
-
-    @Column(name = "duration")
     private Time duration;
-
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id",nullable = false)
     private User user;
-
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public long getId() {
         return id;
@@ -68,4 +39,11 @@ public class GameSession {
         this.duration = duration;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

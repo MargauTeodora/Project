@@ -1,6 +1,6 @@
-package com.playtika.FinalProject.security.repositories;
+package com.playtika.FinalProject.repositories;
 
-import com.playtika.FinalProject.security.models.User;
+import com.playtika.FinalProject.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 

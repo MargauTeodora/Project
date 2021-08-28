@@ -1,6 +1,6 @@
-package com.playtika.FinalProject.security.dto;
+package com.playtika.FinalProject.models.dto;
 
-import com.playtika.FinalProject.security.models.RoleType;
+import com.playtika.FinalProject.models.RoleType;
 
 public class UpdateUserDTO {
     private String firstName;

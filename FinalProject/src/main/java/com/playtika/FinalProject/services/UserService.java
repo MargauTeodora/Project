@@ -1,15 +1,16 @@
-package com.playtika.FinalProject.security.services;
+package com.playtika.FinalProject.services;
 
 import com.playtika.FinalProject.exceptions.UserException;
 import com.playtika.FinalProject.exceptions.customErrors.ErrorCode;
-import com.playtika.FinalProject.security.dto.LoginResponse;
-import com.playtika.FinalProject.security.dto.SignUpRequest;
-import com.playtika.FinalProject.security.dto.UpdateUserDTO;
-import com.playtika.FinalProject.security.models.Role;
-import com.playtika.FinalProject.security.models.RoleType;
-import com.playtika.FinalProject.security.models.User;
-import com.playtika.FinalProject.security.repositories.RoleRepository;
-import com.playtika.FinalProject.security.repositories.UserRepository;
+import com.playtika.FinalProject.models.dto.LoginResponse;
+import com.playtika.FinalProject.models.dto.SignUpRequest;
+import com.playtika.FinalProject.models.dto.UpdateUserDTO;
+import com.playtika.FinalProject.models.Role;
+import com.playtika.FinalProject.models.RoleType;
+import com.playtika.FinalProject.models.User;
+import com.playtika.FinalProject.repositories.RoleRepository;
+import com.playtika.FinalProject.repositories.UserRepository;
+import com.playtika.FinalProject.security.services.JwtTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

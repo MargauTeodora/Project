@@ -1,13 +1,16 @@
-package com.playtika.FinalProject.security.models;
+package com.playtika.FinalProject.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
 public class User {
 
-    @Id
+    @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
@@ -23,6 +26,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(unique = true, nullable = false)
+    private int maximumDailyPlayTime;
+
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -32,13 +38,28 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
 
-    public long getId() {
-        return id;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
+    private List<GameSession> gameSessions;
+
+
+    public List<GameSession> getGameSessions() {
+        return gameSessions;
     }
 
-    public User setId(long id) {
-        this.id = id;
-        return this;
+    public void setGameSessions(List<GameSession> gameSessions) {
+        this.gameSessions = gameSessions;
+    }
+    public void addGameSessions(GameSession gameSession) {
+        if(this.gameSessions==null){
+            this.gameSessions= Arrays.asList(gameSession);
+        }else{
+            this.gameSessions.add(gameSession);
+        }
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getUsername() {

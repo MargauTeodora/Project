@@ -1,10 +1,9 @@
 package com.playtika.FinalProject.services;
 
+import com.playtika.FinalProject.exceptions.GameSessionException;
 import com.playtika.FinalProject.exceptions.UserException;
 import com.playtika.FinalProject.exceptions.customErrors.ErrorCode;
-import com.playtika.FinalProject.models.dto.LoginResponse;
-import com.playtika.FinalProject.models.dto.SignUpRequest;
-import com.playtika.FinalProject.models.dto.UpdateUserDTO;
+import com.playtika.FinalProject.models.dto.*;
 import com.playtika.FinalProject.models.Role;
 import com.playtika.FinalProject.models.RoleType;
 import com.playtika.FinalProject.models.User;
@@ -28,6 +27,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -81,17 +82,64 @@ public class UserService implements UserDetailsService {
     }
 
     public User signUp(SignUpRequest request) {
+        hasCredentialValid(request);
         if (userRepository.existsByUsername(request.getUserName())) {
             throw new UserException(ErrorCode.USER_EXISTS);
         }
+        if(request.getMaximumDailyPlayTime()!=null){
+            verifyMaxDailyPlayTime(request);
+        }
+        logger.info("------------------Bau!");
         User user = new User().setUsername(request.getUserName())
                 .setPassword(passwordEncoder.encode(request.getPassword()))
                 .setEmail(request.getEmail())
                 .setFirstName(request.getFirstName())
                 .setLastName(request.getLastName())
+                .setMaximumDailyPlayTime(request.getMaximumDailyPlayTime())
                 .setRoles(Arrays.asList(roleRepository.findByName(RoleType.ROLE_REGULAR_USER.name())));
         user = userRepository.saveAndFlush(user);
         return user;
+    }
+
+    private void hasCredentialValid(SignUpRequest request) {
+        validateEmail(request);
+        validateEmail(request);
+        validateEmail(request);
+    }
+
+    private void validateUsername(SignUpRequest request) {
+        String regex = "^[a-zA-Z]{4,}$[1-9]*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(request.getUserName());
+
+        if (isEmptyString(request.getUserName()) || !matcher.find()) {
+            throw new UserException(ErrorCode.INCORRECT_USERNAME);
+        }
+    }
+
+
+    private void validateEmail(SignUpRequest request) {
+        String regex = "\\S+@\\S+\\.\\S+";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(request.getEmail());
+
+        if (isEmptyString(request.getEmail()) || !matcher.find()) {
+            throw new UserException(ErrorCode.INCORRECT_EMAIL);
+        }
+    }
+
+    private void validatePassword(SignUpRequest request) {
+        String regex = "^[a-zA-Z]{7,}$[1-9]*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(request.getEmail());
+        if (isEmptyString(request.getEmail()) || !matcher.find()) {
+            throw new UserException(ErrorCode.INCORRECT_PASSWORD);
+        }
+    }
+
+    private boolean isEmptyString(String string) {
+        return string == null
+                || string.isBlank();
     }
 
     public void removeUser(String userName) {
@@ -103,6 +151,10 @@ public class UserService implements UserDetailsService {
             throw new UserException(ErrorCode.NO_DELETE_USER);
         }
         User userToDelete = userRepository.findByUsername(userName);
+//        if (!actualUserIsAdmin()&&(userToDelete.isAdmin()||userToDelete.isManager())){
+//            throw new UserException(ErrorCode.ACCESS_DENIED);
+//        }
+
         if (hasNoPermission(userToDelete)) {
             throw new UserException(ErrorCode.ACCESS_DENIED);
         }
@@ -120,6 +172,7 @@ public class UserService implements UserDetailsService {
         this.userRepository.saveAndFlush(userToUpdate);
         logger.info("User updated successfully");
     }
+
     private void updateGivenField(UpdateUserDTO userFromBody, User userToUpdate) {
         if (userFromBody.getFirstName() != null) {
             userToUpdate.setFirstName(userFromBody.getFirstName());
@@ -130,7 +183,12 @@ public class UserService implements UserDetailsService {
         if (userFromBody.getLastName() != null) {
             userToUpdate.setLastName(userFromBody.getLastName());
         }
+        if (userFromBody.getMaximumDailyPlayTime() != null) {
+            logger.info("AICI ESTE PROBLEMA ");
+            userToUpdate.setMaximumDailyPlayTime(userFromBody.getMaximumDailyPlayTime());
+        }
         if (userFromBody.getRole() == null) {
+            logger.info("TE-AM MINTIT ");
             return;
         }
         List<Role> roles = updateUserToAdmin(userFromBody);
@@ -148,10 +206,8 @@ public class UserService implements UserDetailsService {
     }
 
     private List<Role> updateUserToAdmin(UpdateUserDTO userFromBody) {
-        if(userFromBody.getRole().name().equals(roleRepository.findByName(RoleType.ROLE_ADMIN.name()).getName())
-        &&
-        !isAdmin()
-        ){
+//        if (userFromBody.getRole().name().equals(roleRepository.findByName(RoleType.ROLE_ADMIN.name()).getName())
+        if (userFromBody.isAdmin() && !actualUserIsAdmin()) {
             logger.info("vrea sa actualizeze la un admin dar nu are permisiiuni");
             throw new UserException(ErrorCode.ACCESS_DENIED);
         }
@@ -165,7 +221,8 @@ public class UserService implements UserDetailsService {
 
     private List<Role> updateUserToManager(UpdateUserDTO userFromBody) {
         List<Role> roles = new ArrayList<>();
-        if (userFromBody.getRole().name().equals(roleRepository.findByName(RoleType.ROLE_MANAGER.name()).getName())) {
+//        if (userFromBody.getRole().name().equals(roleRepository.findByName(RoleType.ROLE_MANAGER.name()).getName())) {
+        if (userFromBody.isAdmin()) {
             roles.add(roleRepository.findByName(RoleType.ROLE_MANAGER.name()));
         }
         return roles;
@@ -189,13 +246,14 @@ public class UserService implements UserDetailsService {
     public List<User> getAllUser() {
         return userRepository.findAll();
     }
-    public User getUserInfo() {
+
+    public UserInfoDTO getUserInfo() {
         actualUser = userRepository.findByUsername(getActualUserName());
-        if(actualUser==null){
+        if (actualUser == null) {
             throw new UserException(ErrorCode.NOT_AUTHORIZED);
         }
         logger.info(actualUser.getUsername());
-        return userRepository.findByUsername(getActualUserName());
+        return new UserInfoDTO(actualUser.getUsername(), actualUser.getEmail(), actualUser.getFirstName(), actualUser.getLastName());
     }
 
     private String getActualUserName() {
@@ -204,16 +262,31 @@ public class UserService implements UserDetailsService {
     }
 
     private boolean hasNoPermission(User userToProcess) {
-        return (!isAdmin() && userToProcess.getRoles()
-                .contains(new Role(RoleType.ROLE_ADMIN.name())));
+//        return (!actualUserIsAdmin() && userToProcess.getRoles()
+//                .contains(new Role(RoleType.ROLE_ADMIN.name())));
+
+        return (!actualUserIsAdmin()&&(userToProcess.isAdmin()||userToProcess.isManager()));
     }
 
-    private boolean isAdmin() {
-        return actualUser.getRoles().contains(new Role(RoleType.ROLE_ADMIN.name()));
+    private boolean actualUserIsAdmin() {
+//        return actualUser.getRoles().contains(new Role(RoleType.ROLE_ADMIN.name()));
+        return actualUser.isAdmin();
     }
 
     private boolean isManager() {
-        return actualUser.getRoles().contains(new Role(RoleType.ROLE_MANAGER.name()));
+//        return actualUser.getRoles().contains(new Role(RoleType.ROLE_MANAGER.name()));
+        return actualUser.isManager();
     }
 
+    private void verifyMaxDailyPlayTime(SignUpRequest request) {
+        if (request.getMaximumDailyPlayTime().getHour() < 0 || request.getMaximumDailyPlayTime().getMinutes() < 0) {
+            throw new GameSessionException(GameSessionException.GameSessionErrorCode.NEGATIVE_NUMBER);
+        }
+        if (request.getMaximumDailyPlayTime().getHour() > 23) {
+            throw new GameSessionException(GameSessionException.GameSessionErrorCode.EXCEED_DAILY_HOURS);
+        }
+        if (request.getMaximumDailyPlayTime().getMinutes() > 59) {
+            throw new GameSessionException(GameSessionException.GameSessionErrorCode.EXCEED_MINUTES);
+        }
+    }
 }

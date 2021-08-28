@@ -1,14 +1,24 @@
 package com.playtika.FinalProject.models.dto;
 
+import com.playtika.FinalProject.models.CustomTime;
+import com.playtika.FinalProject.models.GeneralUser;
 import com.playtika.FinalProject.models.RoleType;
 
-public class UpdateUserDTO {
+public class UpdateUserDTO{
     private String firstName;
     private String username;
     private String lastName;
     private String password;
-//    private List<Role> roles;
     private RoleType role;
+    private CustomTime maximumDailyPlayTime;
+
+    public CustomTime getMaximumDailyPlayTime() {
+        return maximumDailyPlayTime;
+    }
+
+    public void setMaximumDailyPlayTime(CustomTime maximumDailyPlayTime) {
+        this.maximumDailyPlayTime = maximumDailyPlayTime;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -58,5 +68,11 @@ public class UpdateUserDTO {
     }
 
     public UpdateUserDTO() {
+    }
+    public boolean isManager(){
+        return role.name().equals(RoleType.ROLE_MANAGER.name());
+    }
+    public boolean isAdmin(){
+        return role.name().equals(RoleType.ROLE_ADMIN.name());
     }
 }

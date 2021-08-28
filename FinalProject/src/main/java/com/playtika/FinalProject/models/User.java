@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends GeneralUser{
 
     @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +26,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(unique = true, nullable = false)
-    private int maximumDailyPlayTime;
+    @Embedded
+    @Column(name = "maximum_daily_play_time")
+    private CustomTime maximumDailyPlayTime=new CustomTime(0,0);
 
     private String password;
 
@@ -42,7 +43,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<GameSession> gameSessions;
 
-
     public List<GameSession> getGameSessions() {
         return gameSessions;
     }
@@ -56,6 +56,16 @@ public class User {
         }else{
             this.gameSessions.add(gameSession);
         }
+    }
+
+
+    public CustomTime getMaximumDailyPlayTime() {
+        return maximumDailyPlayTime;
+    }
+
+    public User setMaximumDailyPlayTime(CustomTime maximumDailyPlayTime) {
+        this.maximumDailyPlayTime = maximumDailyPlayTime;
+        return this;
     }
 
     public long getId() {
@@ -115,4 +125,5 @@ public class User {
         this.roles = roles;
         return this;
     }
+
 }

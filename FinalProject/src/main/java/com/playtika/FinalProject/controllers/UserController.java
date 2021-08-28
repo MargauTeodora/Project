@@ -22,41 +22,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/")
-public class UserController {
+public class UserController extends ExceptionsController {
 
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
     @Autowired
     UserService userService;
 
-    @GetMapping
-    @RequestMapping("/login")
-    public ResponseEntity login( @RequestBody LoginRequest request) throws RuntimeException {
-        try {
-            LoginResponse loginResponse = userService.login(request.getUserName(), request.getPassword());
-            if (loginResponse == null) {
-               throw new UserException(ErrorCode.INCOMPLETE_DATA);
-            } else {
-                return new ResponseEntity<>(loginResponse, HttpStatus.OK);
-            }
-        } catch (UserException ex) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
 
-    }
-
-    @PostMapping(value = "/register")
-    public ResponseEntity<String> signUp(HttpServletRequest requestHeader,
-                                         @RequestBody SignUpRequest request) throws RuntimeException {
-        User user;
-        try {
-            user = userService.signUp(request);
-            return new ResponseEntity<>("Successful register for USER", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>("USER already exists", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @DeleteMapping(value = "/delete")
+    @DeleteMapping(value = "user/delete")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     public ResponseEntity<String> deleteUser(@RequestParam String userName) throws RuntimeException {
         try {
@@ -67,14 +40,10 @@ public class UserController {
         return new ResponseEntity<>(userName, HttpStatus.OK);
     }
 
-    @PatchMapping(value = "/update")
+    @PatchMapping(value = "user/update")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     public ResponseEntity<String> updateUser(@RequestBody UpdateUserDTO user) throws RuntimeException {
-        try {
-            userService.updateUser(user);
-        } catch (Exception e) {
-            throw e;
-        }
+        userService.updateUser(user);
         return new ResponseEntity<>(user.getRole().name(), HttpStatus.OK);
     }
 
@@ -86,35 +55,5 @@ public class UserController {
         } catch (Exception e) {
             throw e;
         }
-    }
-//    /accessDeniedPage
-//    @GetMapping(value = "/info")
-//    @PreAuthorize("hasRole('ROLE_REGULAR_USER')")
-//    public ResponseEntity<User> getUserInfo() throws RuntimeException {
-//        try {
-//            return new ResponseEntity<>(userService.getUserInfo(), HttpStatus.OK);
-//        } catch (Exception e) {
-//            throw e;
-//        }
-//
-//    }
-
-
-    @GetMapping(value = "/info")
-    @PreAuthorize("hasRole('ROLE_REGULAR_USER')")
-    public ResponseEntity<User> getUserInfo() throws RuntimeException {
-        try {
-            return new ResponseEntity<>(userService.getUserInfo(), HttpStatus.OK);
-        } catch (Exception e) {
-            throw e;
-        }
-
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
-    public ErrorMessage handleException(UserException ex) {
-        return  new ErrorMessage(ex.getUserErrorCode().getMessage(),
-                ex.getUserErrorCode().getCode());
     }
 }

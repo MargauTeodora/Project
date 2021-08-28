@@ -5,13 +5,36 @@ import com.playtika.FinalProject.exceptions.customErrors.ErrorCode;
 public class GameSessionException extends RuntimeException{
 //TODO make game sessio errror codes
 
-
-    private ErrorCode userErrorCode;
-    public GameSessionException(ErrorCode userErrorCode) {
+    private GameSessionErrorCode userErrorCode;
+    public GameSessionException(GameSessionErrorCode userErrorCode) {
         this.userErrorCode = userErrorCode;
     }
-    public ErrorCode getUserErrorCode() {
+    public GameSessionErrorCode getUserErrorCode() {
         return userErrorCode;
+    }
+
+
+    public enum GameSessionErrorCode {
+
+        EXCEED_DAILY_HOURS(501,"A day has just 23 hour!"),
+         EXCEED_MINUTES(502,"An hour has just 59 minutes!"),
+         NEGATIVE_NUMBER(503,"This value cannot be negative!")
+        ;
+        private int code;
+        private String message;
+
+        GameSessionErrorCode(int code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }
 

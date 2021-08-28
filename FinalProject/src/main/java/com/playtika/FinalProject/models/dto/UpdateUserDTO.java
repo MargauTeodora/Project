@@ -1,7 +1,6 @@
 package com.playtika.FinalProject.models.dto;
 
 import com.playtika.FinalProject.models.CustomTime;
-import com.playtika.FinalProject.models.GeneralUser;
 import com.playtika.FinalProject.models.RoleType;
 
 public class UpdateUserDTO{
@@ -69,6 +68,7 @@ public class UpdateUserDTO{
 
     public UpdateUserDTO() {
     }
+
     public boolean isManager(){
         return role.name().equals(RoleType.ROLE_MANAGER.name());
     }

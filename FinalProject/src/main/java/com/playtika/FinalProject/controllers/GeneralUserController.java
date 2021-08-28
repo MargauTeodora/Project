@@ -4,11 +4,9 @@ import com.playtika.FinalProject.exceptions.UserException;
 import com.playtika.FinalProject.exceptions.customErrors.ErrorCode;
 import com.playtika.FinalProject.exceptions.customErrors.ErrorMessage;
 import com.playtika.FinalProject.models.User;
-import com.playtika.FinalProject.models.dto.LoginRequest;
-import com.playtika.FinalProject.models.dto.LoginResponse;
-import com.playtika.FinalProject.models.dto.SignUpRequest;
-import com.playtika.FinalProject.models.dto.UserInfoDTO;
+import com.playtika.FinalProject.models.dto.*;
 import com.playtika.FinalProject.services.UserService;
+import com.playtika.FinalProject.utils.BodyMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +22,7 @@ public class GeneralUserController extends ExceptionsController {
 
     @GetMapping
     @RequestMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequest request) throws RuntimeException {
+    public ResponseEntity login(@RequestBody LoginRequest request){
         LoginResponse loginResponse = userService.login(request.getUserName(), request.getPassword());
         if (loginResponse == null) {
             throw new UserException(ErrorCode.INCOMPLETE_DATA);
@@ -34,16 +32,30 @@ public class GeneralUserController extends ExceptionsController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<String> signUp(@RequestBody SignUpRequest request) throws RuntimeException {
-
+    public ResponseEntity signUp(@RequestBody SignUpRequest request){
         userService.signUp(request);
-        return ResponseEntity.ok("Successful register for USER");
+        return ResponseEntity.ok(new BodyMessage("Successful register for USER"));
 
     }
 
     @GetMapping(value = "user/info")
     @PreAuthorize("hasRole('ROLE_REGULAR_USER')")
-    public ResponseEntity<UserInfoDTO> getUserInfo() throws RuntimeException {
-        return new ResponseEntity<>(userService.getUserInfo(), HttpStatus.OK);
+    public ResponseEntity getUserInfo(){
+        return  ResponseEntity.ok(userService.getUserInfo());
     }
+
+    @GetMapping(value = "user/gamesession")
+    @PreAuthorize("hasRole('ROLE_REGULAR_USER')")
+    public ResponseEntity getGameSessionInfo(){
+        return  ResponseEntity.ok(userService.getGameSession());
+    }
+
+
+    @PatchMapping(value = "user/update")
+    @PreAuthorize("hasRole('ROLE_REGULAR_USER')")
+    public ResponseEntity updateUser(@RequestBody UpdateUserDTO user) throws RuntimeException {
+        userService.updateUser(user);
+        return  ResponseEntity.ok(new BodyMessage("Successfully update user"));
+    }
+
 }

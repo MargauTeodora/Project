@@ -4,6 +4,7 @@ package com.playtika.FinalProject.controllers;
 import com.playtika.FinalProject.models.GameSession;
 import com.playtika.FinalProject.models.dto.AddNewGameSessionDTO;
 import com.playtika.FinalProject.services.GameSessionService;
+import com.playtika.FinalProject.utils.BodyMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,30 +15,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping
-public class GameSessionController {
+public class GameSessionController extends ExceptionsController {
+
     //TODO validate if game exists in link
+
     @Autowired
     GameSessionService gameSessionService;
 
     @PostMapping(value = "/add")
-    public ResponseEntity<String> addSession( @RequestBody AddNewGameSessionDTO gameSessionDTO){
-        GameSession gameSession;
-        try {
-            gameSession = gameSessionService.addGameSession(gameSessionDTO);
-            return new ResponseEntity<>("Successful adding for GAME SESSION", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>("SAAAD, YOU HAVE A PROBLEM !!", HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity addSession(@RequestBody AddNewGameSessionDTO gameSessionDTO) {
+        return gameSessionService.addGameSession(gameSessionDTO);
+    }
+
+    @PostMapping(value = "/stop")
+    public ResponseEntity stopSession() {
+        gameSessionService.stop();
+        return ResponseEntity.ok(new BodyMessage("You stopped the GAME SESSION"));
     }
 
     @GetMapping(value = "/gamesessions")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<GameSession>> getAllUser() throws RuntimeException {
-        try {
-            return new ResponseEntity<>(gameSessionService.getAllGameSessions(), HttpStatus.OK);
-        } catch (Exception e) {
-            throw e;
-        }
+    public ResponseEntity getAllUser() {
+        return ResponseEntity.ok(gameSessionService.getAllGameSessions());
     }
 
 

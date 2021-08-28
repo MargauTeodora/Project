@@ -2,7 +2,7 @@ package com.playtika.FinalProject.exceptions.customErrors;
 
 public enum ErrorCode {
 
-    ACCESS_DENIED(99,"You do not have permissions for this operation "),
+    NO_PERMISSION(99,"You do not have permissions for this operation "),
     INVALID_CREDENTIALS(100,"Invalid username/password supplied"),
     USER_EXISTS(101,"User already exists in system"),
     NO_DELETE_USER(102,"User given for delete doesn't exists"),

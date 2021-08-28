@@ -23,12 +23,17 @@ public class GameSession {
     @Temporal(TemporalType.TIMESTAMP)
     private Date startDate;
 
+    //    @Column(name = "duration")
+//    private Time duration;
+
+    @Embedded
     @Column(name = "duration")
-    private Time duration;
+    private CustomTime duration=new CustomTime();
+
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id",nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
 
@@ -60,12 +65,20 @@ public class GameSession {
         this.startDate = startDate;
     }
 
-    public Time getDuration() {
+    public CustomTime getDuration() {
         return duration;
     }
 
-    public void setDuration(Time duration) {
+    public void setDuration(CustomTime duration) {
         this.duration = duration;
     }
+
+    //    public Time getDuration() {
+//        return duration;
+//    }
+//
+//    public void setDuration(Time duration) {
+//        this.duration = duration;
+//    }
 
 }

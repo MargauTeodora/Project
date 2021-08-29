@@ -61,7 +61,8 @@ public class GameSessionService {
         logger.info(actualUser.getGameSessions().size()+"");
         actualUser.setExceedingDailyPlayTime(actualUser.getMaximumDailyPlayTime().compareTo(actualUser.getPlayedTime())==-1);
         if(actualUser.isExceedingDailyPlayTime()){
-            return new ResponseEntity(new BodyMessage("Daily play time exceed"),HttpStatus.CONFLICT);
+            return new ResponseEntity
+                    (new BodyMessage("Successful adding for GAME SESSION!***Daily play time exceed"),HttpStatus.CONFLICT);
         }
         return new ResponseEntity(new BodyMessage("Successful adding for GAME SESSION"),HttpStatus.OK);
     }

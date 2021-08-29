@@ -20,6 +20,7 @@ public class GameSessionException extends RuntimeException{
          EXCEED_MINUTES(502,"An hour has just 59 minutes!"),
          NEGATIVE_NUMBER(503,"This value cannot be negative!"),
          IS_PLAYING(504,"You already are in a game! Stop that session and come back!"),
+         NONEXISTENT_GAME(505,"This game is not available!"),
         ;
         private int code;
         private String message;

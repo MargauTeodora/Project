@@ -6,6 +6,7 @@ import com.playtika.FinalProject.utils.BodyMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class UserController extends ExceptionsController {
 
     @GetMapping(value = "/users")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<User>> getAllUser() {
-        return ResponseEntity.ok(userService.getAllUser());
+    public ResponseEntity<List<User>> getAllUser(Pageable pageable) {
+        return ResponseEntity.ok(userService.getAllUser(pageable));
     }
 }

@@ -160,7 +160,6 @@ public class User {
     }
 
     public User setRoles(List<Role> roles) {
-
         this.roles = roles;
         return this;
     }

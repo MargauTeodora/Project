@@ -23,9 +23,6 @@ public class GameSession {
     @Temporal(TemporalType.TIMESTAMP)
     private Date startDate;
 
-    //    @Column(name = "duration")
-//    private Time duration;
-
     @Embedded
     @Column(name = "duration")
     private CustomTime duration=new CustomTime();
@@ -44,11 +41,6 @@ public class GameSession {
     public void setUser(User user) {
         this.user = user;
     }
-
-    public long getId() {
-        return id;
-    }
-
     public String getGameName() {
         return gameName;
     }
@@ -72,13 +64,5 @@ public class GameSession {
     public void setDuration(CustomTime duration) {
         this.duration = duration;
     }
-
-    //    public Time getDuration() {
-//        return duration;
-//    }
-//
-//    public void setDuration(Time duration) {
-//        this.duration = duration;
-//    }
 
 }

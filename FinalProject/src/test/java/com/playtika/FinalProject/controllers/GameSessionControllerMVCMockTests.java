@@ -1,6 +1,7 @@
 package com.playtika.FinalProject.controllers;
 
 
+import com.playtika.FinalProject.exceptions.GameSessionException;
 import com.playtika.FinalProject.externalAPI.OnlineGameNameService;
 import com.playtika.FinalProject.models.dto.AddNewGameSessionDTO;
 import com.playtika.FinalProject.services.GameSessionService;
@@ -78,7 +79,7 @@ public class GameSessionControllerMVCMockTests {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().is(412))
                 .andReturn();
-        Assertions.assertTrue(result.getResponse().getContentAsString().contains("This game is not available!"));
+        Assertions.assertTrue(result.getResponse().getContentAsString().contains(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME.getMessage()));
     }
 
     @Test

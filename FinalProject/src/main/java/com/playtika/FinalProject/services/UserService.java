@@ -13,6 +13,7 @@ import com.playtika.FinalProject.security.services.JwtTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -110,7 +111,7 @@ public class UserService implements UserDetailsService {
         }
         User userToDelete = userRepository.findByUsername(userName);
         if (hasNoPermissionToDelete(userToDelete)) {
-            throw new UserException(UserErrorCode.NO_PERMISSION);
+            throw new UserException(UserErrorCode.NOT_ALLOWED);
         }
         userRepository.deleteByUsername(userName);
     }
@@ -193,8 +194,8 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public List<User> getAllUser() {
-        return userRepository.findAll();
+    public List<User> getAllUser(Pageable pageable) {
+        return userRepository.findAll(pageable).toList();
     }
 
     public UserInfoDTO getUserInfo() {

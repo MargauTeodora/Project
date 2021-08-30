@@ -14,6 +14,7 @@ public enum UserErrorCode {
     INCORRECT_USERNAME(108,"Invalid username! Username should contains only a-z characters and 1-9 numbers "),
     INCORRECT_EMAIL(109,"Invalid email! "),
     INCORRECT_PASSWORD(110,"Invalid password! "),
+    NOT_ALLOWED(111," You cannot do that! "),
     ;
 
 

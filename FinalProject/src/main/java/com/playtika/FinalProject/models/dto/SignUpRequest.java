@@ -1,6 +1,6 @@
 package com.playtika.FinalProject.models.dto;
 
-import com.playtika.FinalProject.models.CustomTime;
+import com.playtika.FinalProject.utils.CustomTime;
 
 public class SignUpRequest {
     private String userName;

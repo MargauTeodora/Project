@@ -1,6 +1,6 @@
 package com.playtika.FinalProject.exceptions.customErrors;
 
-public enum ErrorCode {
+public enum UserErrorCode {
 
     NO_PERMISSION(99,"You do not have permissions for this operation "),
     INVALID_CREDENTIALS(100,"Invalid username/password supplied"),
@@ -20,7 +20,7 @@ public enum ErrorCode {
     private int code;
     private String message;
 
-    ErrorCode(int code, String message) {
+    UserErrorCode(int code, String message) {
         this.code = code;
         this.message = message;
     }

@@ -17,7 +17,6 @@ public class OnlineGameNameService {
     public OnlineGameNameService(RestTemplateBuilder restTemplate) {
         this.restTemplate = restTemplate.build();
     }
-
     @Async
     public CompletableFuture<String> getGameName(String gameName){
         String slug=gameName.replace(" ","-");
@@ -25,12 +24,11 @@ public class OnlineGameNameService {
         try{
             game = restTemplate.getForObject(URL+slug+"?key="+key, Game.class);
         }catch (HttpClientErrorException ex){
-            throw new GameSessionException(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME);
+            return CompletableFuture.failedFuture(new GameSessionException(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME));
         }
         if(game==null||game.getName()==null){
-            throw new GameSessionException(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME);
+            return CompletableFuture.failedFuture(new GameSessionException(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME));
         }
-
         return CompletableFuture.completedFuture(game.getName());
     }
 }

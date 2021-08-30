@@ -1,6 +1,6 @@
 package com.playtika.FinalProject.models.dto;
 
-import com.playtika.FinalProject.models.CustomTime;
+import com.playtika.FinalProject.utils.CustomTime;
 
 public class UserInfoDTO {
     private String userName;
@@ -16,6 +16,9 @@ public class UserInfoDTO {
         this.firstName = firstName;
         this.lastName = lastName;
         this.maximumDailyPlayTime = maximumDailyPlayTime;
+    }
+
+    public UserInfoDTO() {
     }
 
     public CustomTime getMaximumDailyPlayTime() {

@@ -1,13 +1,13 @@
 package com.playtika.FinalProject.exceptions;
 
-import com.playtika.FinalProject.exceptions.customErrors.ErrorCode;
+import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
 
 public class UserException extends RuntimeException{
-    private ErrorCode userErrorCode;
-    public UserException(ErrorCode userErrorCode) {
+    private UserErrorCode userErrorCode;
+    public UserException(UserErrorCode userErrorCode) {
         this.userErrorCode = userErrorCode;
     }
-    public ErrorCode getUserErrorCode() {
+    public UserErrorCode getUserErrorCode() {
         return userErrorCode;
     }
 }

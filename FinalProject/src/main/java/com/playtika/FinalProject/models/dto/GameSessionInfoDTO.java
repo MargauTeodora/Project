@@ -1,8 +1,6 @@
 package com.playtika.FinalProject.models.dto;
 
-import com.playtika.FinalProject.models.CustomTime;
-
-import java.util.Date;
+import com.playtika.FinalProject.utils.CustomTime;
 
 public class GameSessionInfoDTO {
     private String gameName;

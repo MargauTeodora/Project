@@ -1,7 +1,7 @@
 package com.playtika.FinalProject.security.services;
 
 import com.playtika.FinalProject.exceptions.UserException;
-import com.playtika.FinalProject.exceptions.customErrors.ErrorCode;
+import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
 import com.playtika.FinalProject.models.Role;
 import com.playtika.FinalProject.services.UserService;
 import io.jsonwebtoken.Claims;
@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public class JwtTokenService {
 
     private String secretKey = "MY_SECRET_KEY";
+    private Date validity;
 
     private long validityInMilliseconds = 3600000; // 1h
 
@@ -46,7 +47,7 @@ public class JwtTokenService {
         ).filter(Objects::nonNull).collect(Collectors.toList()));
 
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -79,7 +80,11 @@ public class JwtTokenService {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            throw new UserException(ErrorCode.INVALID_TOKEN);
+            throw new UserException(UserErrorCode.INVALID_TOKEN);
         }
+    }
+
+    public Date getValidity() {
+        return validity;
     }
 }

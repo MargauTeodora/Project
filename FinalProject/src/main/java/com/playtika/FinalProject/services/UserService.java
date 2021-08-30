@@ -1,8 +1,7 @@
 package com.playtika.FinalProject.services;
 
-import com.playtika.FinalProject.exceptions.GameSessionException;
 import com.playtika.FinalProject.exceptions.UserException;
-import com.playtika.FinalProject.exceptions.customErrors.ErrorCode;
+import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
 import com.playtika.FinalProject.models.GameSession;
 import com.playtika.FinalProject.models.dto.*;
 import com.playtika.FinalProject.models.Role;
@@ -40,6 +39,7 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private RoleRepository roleRepository;
 
@@ -51,6 +51,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+
+
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
@@ -78,13 +81,13 @@ public class UserService implements UserDetailsService {
                     .setUserName(user.getUsername())
                     .setAccessToken(jwtTokenService.createToken(userName, user.getRoles()));
         } catch (AuthenticationException e) {
-            throw new UserException(ErrorCode.INVALID_CREDENTIALS);
+            throw new UserException(UserErrorCode.INVALID_CREDENTIALS);
         }
     }
 
     public User signUp(SignUpRequest request) {
         if (userRepository.existsByUsername(request.getUserName())) {
-            throw new UserException(ErrorCode.USER_EXISTS);
+            throw new UserException(UserErrorCode.USER_EXISTS);
         }
         User user = new User().setUsername(request.getUserName())
                 .setPassword(passwordEncoder.encode(request.getPassword()))
@@ -100,14 +103,14 @@ public class UserService implements UserDetailsService {
     public void removeUser(String userName) {
         actualUser = userRepository.findByUsername(getActualUserName());
         if (!actualUserIsManager()) {
-            throw new UserException(ErrorCode.NO_PERMISSION);
+            throw new UserException(UserErrorCode.NO_PERMISSION);
         }
         if (!userRepository.existsByUsername(userName)) {
-            throw new UserException(ErrorCode.NO_DELETE_USER);
+            throw new UserException(UserErrorCode.NO_DELETE_USER);
         }
         User userToDelete = userRepository.findByUsername(userName);
         if (hasNoPermissionToDelete(userToDelete)) {
-            throw new UserException(ErrorCode.NO_PERMISSION);
+            throw new UserException(UserErrorCode.NO_PERMISSION);
         }
         userRepository.deleteByUsername(userName);
     }
@@ -117,19 +120,16 @@ public class UserService implements UserDetailsService {
         User userToUpdate = getUserToUpdate(userFromBody);
         if (!isSameUser(userToUpdate)) {
             if (hasNoPermission(userToUpdate)) {
-                throw new UserException(ErrorCode.NO_PERMISSION);
+                throw new UserException(UserErrorCode.NO_PERMISSION);
             }
             updateGivenField(userFromBody, userToUpdate);
         }
         updateAllowedField(userFromBody, userToUpdate);
         userToUpdate = userRepository.saveAndFlush(userToUpdate);
         this.userRepository.saveAndFlush(userToUpdate);
-        logger.info("User updated successfully");
-
     }
 
     private void updateAllowedField(UpdateUserDTO userFromBody, User userToUpdate) {
-        logger.info("DOR METODELE PERMISE");
         if (userFromBody.getFirstName() != null) {
             userToUpdate.setFirstName(userFromBody.getFirstName());
         }
@@ -140,7 +140,6 @@ public class UserService implements UserDetailsService {
             userToUpdate.setLastName(userFromBody.getLastName());
         }
         if (userFromBody.getMaximumDailyPlayTime() != null) {
-            logger.info("AICI ESTE PROBLEMA ");
             userToUpdate.setMaximumDailyPlayTime(userFromBody.getMaximumDailyPlayTime());
         }
     }
@@ -164,7 +163,7 @@ public class UserService implements UserDetailsService {
 
     private List<Role> updateUserToAdmin(UpdateUserDTO userFromBody) {
         if (userFromBody.isAdmin() && !actualUserIsAdmin()) {
-            throw new UserException(ErrorCode.NO_PERMISSION);
+            throw new UserException(UserErrorCode.NO_PERMISSION);
         }
         List<Role> roles = new ArrayList<>();
         if (userFromBody.getRole().name().equals(roleRepository.findByName(RoleType.ROLE_ADMIN.name()).getName())) {
@@ -184,11 +183,11 @@ public class UserService implements UserDetailsService {
 
     private User getUserToUpdate(UpdateUserDTO userFromBody) {
         if (actualUser == null) {
-            throw new UserException(ErrorCode.NOT_AUTHORIZED);
+            throw new UserException(UserErrorCode.NOT_AUTHORIZED);
         }
         User userToUpdate = userRepository.findByUsername(userFromBody.getUsername());
         if (userFromBody == null || userToUpdate == null) {
-            throw new UserException(ErrorCode.NO_UPDATE_USER);
+            throw new UserException(UserErrorCode.NO_UPDATE_USER);
         }
         return userToUpdate;
     }
@@ -201,7 +200,7 @@ public class UserService implements UserDetailsService {
     public UserInfoDTO getUserInfo() {
         actualUser = userRepository.findByUsername(getActualUserName());
         if (actualUser == null) {
-            throw new UserException(ErrorCode.NOT_AUTHORIZED);
+            throw new UserException(UserErrorCode.NOT_AUTHORIZED);
         }
         return new UserInfoDTO(actualUser.getUsername(), actualUser.getEmail(), actualUser.getFirstName(), actualUser.getLastName(),
                 actualUser.getMaximumDailyPlayTime());
@@ -210,7 +209,7 @@ public class UserService implements UserDetailsService {
     public List<GameSessionInfoDTO> getGameSession() {
         actualUser = userRepository.findByUsername(getActualUserName());
         if (actualUser == null) {
-            throw new UserException(ErrorCode.NOT_AUTHORIZED);
+            throw new UserException(UserErrorCode.NOT_AUTHORIZED);
         }
         return convertGameSessionToDTOList(actualUser.getGameSessions());
     }

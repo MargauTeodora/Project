@@ -1,10 +1,10 @@
 package com.playtika.FinalProject.models;
 
+import com.playtika.FinalProject.utils.CustomTime;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.sql.Time;
 import java.util.Date;
 
 

@@ -1,4 +1,4 @@
-package com.playtika.FinalProject.models;
+package com.playtika.FinalProject.utils;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

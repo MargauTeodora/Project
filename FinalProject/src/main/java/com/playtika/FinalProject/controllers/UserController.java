@@ -15,8 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/")
 public class UserController extends ExceptionsController {
-
-    private static Logger logger = LoggerFactory.getLogger(UserService.class);
     @Autowired
     UserService userService;
 

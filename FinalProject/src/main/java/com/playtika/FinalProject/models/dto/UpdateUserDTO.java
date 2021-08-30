@@ -1,6 +1,6 @@
 package com.playtika.FinalProject.models.dto;
 
-import com.playtika.FinalProject.models.CustomTime;
+import com.playtika.FinalProject.utils.CustomTime;
 import com.playtika.FinalProject.models.RoleType;
 
 public class UpdateUserDTO{
@@ -8,7 +8,7 @@ public class UpdateUserDTO{
     private String username;
     private String lastName;
     private String password;
-    private RoleType role;
+    private RoleType role=RoleType.ROLE_REGULAR_USER;
     private CustomTime maximumDailyPlayTime;
 
     public CustomTime getMaximumDailyPlayTime() {

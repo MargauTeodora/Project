@@ -3,11 +3,16 @@ package com.playtika.FinalProject.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.playtika.FinalProject.exceptions.GameSessionException;
 import com.playtika.FinalProject.exceptions.UserException;
-import com.playtika.FinalProject.exceptions.customErrors.ErrorCode;
+import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
 import com.playtika.FinalProject.models.dto.SignUpRequest;
+import com.playtika.FinalProject.utils.CustomTime;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -191,7 +196,7 @@ public class User {
         Matcher matcher = pattern.matcher(email);
 
         if (isEmptyString(email) || !matcher.find()) {
-            throw new UserException(ErrorCode.INCORRECT_USERNAME);
+            throw new UserException(UserErrorCode.INCORRECT_USERNAME);
         }
     }
 
@@ -202,7 +207,7 @@ public class User {
         Matcher matcher = pattern.matcher(email);
 
         if (isEmptyString(email) || !matcher.find()) {
-            throw new UserException(ErrorCode.INCORRECT_EMAIL);
+            throw new UserException(UserErrorCode.INCORRECT_EMAIL);
         }
     }
 
@@ -211,7 +216,7 @@ public class User {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(password);
         if (isEmptyString(password) || !matcher.find()) {
-            throw new UserException(ErrorCode.INCORRECT_PASSWORD);
+            throw new UserException(UserErrorCode.INCORRECT_PASSWORD);
         }
     }
 
@@ -232,16 +237,27 @@ public class User {
                 throw new GameSessionException(GameSessionException.GameSessionErrorCode.EXCEED_MINUTES);
             }
         }
-
     }
-    public CustomTime getPlayedTime(){
-        int total=0;
-        for(GameSession gameSession :gameSessions){
-            total+=gameSession.getDuration().getHour()+gameSession.getDuration().getMinutes();
-        }
-        int hour=total/60;
-        int minutes=total%60;
 
-        return new CustomTime(hour,minutes);
+    public CustomTime getPlayedTime() {
+        int total = 0;
+        for (GameSession gameSession : gameSessions) {
+            LocalDateTime startDay = convertToLocalDateTime(gameSession.getStartDate());
+            LocalDateTime endDate = convertToLocalDateTime(new Date());
+            if (ChronoUnit.DAYS.between(startDay, endDate) != 0) {
+                continue;
+            }
+            total += gameSession.getDuration().getHour() + gameSession.getDuration().getMinutes();
+        }
+        int hour = total / 60;
+        int minutes = total % 60;
+
+        return new CustomTime(hour, minutes);
+    }
+
+    private LocalDateTime convertToLocalDateTime(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 }

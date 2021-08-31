@@ -39,15 +39,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        // Endpoints
         http.authorizeRequests()
                 .anyRequest().authenticated();
-
-        // If a user try to access a resource without having enough permissions
         http.exceptionHandling().accessDeniedPage("/accessDeniedPage");
 
-
-        // Apply JWT
         http.apply(new JwtTokenFilterConfigurer(jwtTokenService));
     }
 

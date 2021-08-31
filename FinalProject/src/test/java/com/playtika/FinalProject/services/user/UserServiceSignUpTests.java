@@ -5,11 +5,9 @@ import com.playtika.FinalProject.exceptions.UserException;
 import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
 import com.playtika.FinalProject.models.Role;
 import com.playtika.FinalProject.models.User;
-import com.playtika.FinalProject.models.dto.LoginResponse;
-import com.playtika.FinalProject.models.dto.SignUpRequest;
+import com.playtika.FinalProject.models.dto.users.SignUpRequest;
 import com.playtika.FinalProject.repositories.RoleRepository;
 import com.playtika.FinalProject.repositories.UserRepository;
-import com.playtika.FinalProject.security.services.JwtTokenService;
 import com.playtika.FinalProject.services.UserService;
 import com.playtika.FinalProject.utils.CustomTime;
 import org.junit.jupiter.api.Assertions;
@@ -23,8 +21,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class UserServiceSignUpTests {
@@ -60,9 +57,9 @@ public class UserServiceSignUpTests {
 
     @Test
     void testSignUpUserAlreadyExists() {
-        when(userRepository.existsByUsername("admin")).thenReturn(true);
+        when(userRepository.existsByUsername("anyString")).thenReturn(true);
         try {
-            signUpRequest.setUserName("admin");
+            doNothing().when(signUpRequest).setUserName("anyString");
             userService.signUp(signUpRequest);
         } catch (UserException e) {
             Assertions.assertEquals(e.getUserErrorCode().getMessage()

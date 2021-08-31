@@ -2,6 +2,7 @@ package com.playtika.FinalProject.controllers;
 
 
 import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
+import com.playtika.FinalProject.services.AdminService;
 import com.playtika.FinalProject.services.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,9 @@ public class UserControllerMVCMockTests {
     @MockBean
     UserService userService;
 
+    @MockBean
+    AdminService adminService;
+
 
     @Test
     void delete() throws Exception {
@@ -58,9 +62,9 @@ public class UserControllerMVCMockTests {
     @Test
     @WithMockUser(roles = {"ADMIN","MANAGER"})
     void getAllUsers() throws Exception {
-        when(userService.getAllUser(any()))
+        when(adminService.getAllUser(any()))
                 .thenReturn(new ArrayList<>());
-        MvcResult result = mockMvc.perform(get("/users"))
+        MvcResult result = mockMvc.perform(get("/admin/users"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -68,9 +72,9 @@ public class UserControllerMVCMockTests {
     @Test
     @WithMockUser(roles = {"MANAGER"})
     void getAllUsersNotAllow() throws Exception {
-        when(userService.getAllUser(any()))
+        when(adminService.getAllUser(any()))
                 .thenReturn(new ArrayList<>());
-        MvcResult result = mockMvc.perform(get("/users"))
+        MvcResult result = mockMvc.perform(get("/admin/users"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().is(412))
                 .andReturn();

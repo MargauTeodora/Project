@@ -2,7 +2,10 @@ package com.playtika.FinalProject.controllers;
 
 import com.playtika.FinalProject.exceptions.UserException;
 import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
-import com.playtika.FinalProject.models.dto.*;
+import com.playtika.FinalProject.models.dto.users.LoginRequest;
+import com.playtika.FinalProject.models.dto.users.LoginResponse;
+import com.playtika.FinalProject.models.dto.users.SignUpRequest;
+import com.playtika.FinalProject.models.dto.users.UpdateUserDTO;
 import com.playtika.FinalProject.services.UserService;
 import com.playtika.FinalProject.utils.BodyMessage;
 import org.springframework.beans.factory.annotation.Autowired;

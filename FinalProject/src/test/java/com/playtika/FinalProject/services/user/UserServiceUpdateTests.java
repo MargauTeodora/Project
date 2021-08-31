@@ -5,7 +5,7 @@ import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
 import com.playtika.FinalProject.models.Role;
 import com.playtika.FinalProject.models.RoleType;
 import com.playtika.FinalProject.models.User;
-import com.playtika.FinalProject.models.dto.UpdateUserDTO;
+import com.playtika.FinalProject.models.dto.users.UpdateUserDTO;
 import com.playtika.FinalProject.repositories.RoleRepository;
 import com.playtika.FinalProject.repositories.UserRepository;
 import com.playtika.FinalProject.services.UserService;
@@ -23,7 +23,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Arrays;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 

@@ -1,4 +1,4 @@
-package com.playtika.FinalProject.models.dto;
+package com.playtika.FinalProject.models.dto.users;
 
 import com.playtika.FinalProject.utils.CustomTime;
 import com.playtika.FinalProject.models.RoleType;

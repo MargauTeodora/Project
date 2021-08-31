@@ -1,4 +1,4 @@
-package com.playtika.FinalProject.models.dto;
+package com.playtika.FinalProject.models.dto.game;
 
 import com.playtika.FinalProject.utils.CustomTime;
 

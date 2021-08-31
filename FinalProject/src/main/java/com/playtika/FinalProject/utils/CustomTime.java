@@ -23,19 +23,9 @@ public class CustomTime implements Comparable,Cloneable{
     public int getHour() {
         return hour;
     }
-
-    public void setHour(int hour) {
-        this.hour = hour;
-    }
-
     public int getMinutes() {
         return minutes;
     }
-
-    public void setMinutes(int minutes) {
-        this.minutes = minutes;
-    }
-
 
     @Override
     public int compareTo(Object o) {
@@ -57,8 +47,8 @@ public class CustomTime implements Comparable,Cloneable{
         return sb.toString();
     }
 
-//    @Override
-//    public Object clone(){
-//        return new CustomTime(this.hour,this.minutes);
-//    }
+    @Override
+    public Object clone(){
+        return new CustomTime(this.hour,this.minutes);
+    }
 }

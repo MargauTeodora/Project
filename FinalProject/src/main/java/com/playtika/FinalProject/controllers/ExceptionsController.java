@@ -33,8 +33,6 @@ public class ExceptionsController {
                     .getMessage(),
                     GameSessionException.GameSessionErrorCode.GET_GAME_FAIL.getCode());
         }
-
-
         return new ErrorMessage(ex.getMessage(),404);
     }
 }

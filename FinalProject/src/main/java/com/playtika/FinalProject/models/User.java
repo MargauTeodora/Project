@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.playtika.FinalProject.exceptions.GameSessionException;
 import com.playtika.FinalProject.exceptions.UserException;
 import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
-import com.playtika.FinalProject.models.dto.SignUpRequest;
+import com.playtika.FinalProject.models.dto.users.SignUpRequest;
 import com.playtika.FinalProject.utils.CustomTime;
 
 import javax.persistence.*;
@@ -40,13 +40,7 @@ public class User {
     @Transient
     private boolean isExceedingDailyPlayTime;
 
-    public boolean isExceedingDailyPlayTime() {
-        return isExceedingDailyPlayTime;
-    }
 
-    public void setExceedingDailyPlayTime(boolean exceedingDailyPlayTime) {
-        isExceedingDailyPlayTime = exceedingDailyPlayTime;
-    }
 
     @Embedded
     @Column(name = "maximum_daily_play_time")
@@ -64,6 +58,16 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<GameSession> gameSessions;
+
+
+
+    public boolean isExceedingDailyPlayTime() {
+        return isExceedingDailyPlayTime;
+    }
+
+    public void setExceedingDailyPlayTime(boolean exceedingDailyPlayTime) {
+        isExceedingDailyPlayTime = exceedingDailyPlayTime;
+    }
 
     public List<GameSession> getGameSessions() {
         if(this.gameSessions==null){

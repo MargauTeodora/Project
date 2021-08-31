@@ -1,4 +1,4 @@
-package com.playtika.FinalProject.models.dto;
+package com.playtika.FinalProject.models.dto.users;
 
 public class LoginRequest {
     private String userName;

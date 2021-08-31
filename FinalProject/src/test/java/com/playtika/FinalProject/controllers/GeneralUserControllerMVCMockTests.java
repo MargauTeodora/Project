@@ -1,7 +1,8 @@
 package com.playtika.FinalProject.controllers;
 
 import com.playtika.FinalProject.models.User;
-import com.playtika.FinalProject.models.dto.*;
+import com.playtika.FinalProject.models.dto.game.GameSessionInfoDTO;
+import com.playtika.FinalProject.models.dto.users.*;
 import com.playtika.FinalProject.services.UserService;
 import com.playtika.FinalProject.utils.Converter;
 import org.junit.jupiter.api.Assertions;

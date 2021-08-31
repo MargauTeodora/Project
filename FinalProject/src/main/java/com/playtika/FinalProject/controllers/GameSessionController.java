@@ -2,7 +2,7 @@ package com.playtika.FinalProject.controllers;
 
 import com.playtika.FinalProject.exceptions.GameSessionException;
 import com.playtika.FinalProject.externalAPI.OnlineGameNameService;
-import com.playtika.FinalProject.models.dto.GameSessionAddDTO;
+import com.playtika.FinalProject.models.dto.game.GameSessionAddDTO;
 import com.playtika.FinalProject.services.GameSessionService;
 import com.playtika.FinalProject.utils.BodyMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/")
 public class GameSessionController extends ExceptionsController {
 
     @Autowired
@@ -37,8 +37,6 @@ public class GameSessionController extends ExceptionsController {
         return ResponseEntity.ok(new BodyMessage("You stopped the GAME SESSION"));
     }
 
-
-    //    TODO pagination and filter
     @GetMapping(value = "/gamesessions")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity getAllGameSessions(Pageable pageable) {

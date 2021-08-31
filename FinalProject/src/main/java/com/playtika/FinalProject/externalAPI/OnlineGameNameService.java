@@ -22,6 +22,7 @@ public class OnlineGameNameService {
         String slug=gameName.replace(" ","-");
         Game game=null;
         try{
+//            https://rawg.io/api/games/+nume?key=6e733e35e8ef43298200c1c79a6aa8d9
             game = restTemplate.getForObject(URL+slug+"?key="+key, Game.class);
             if(game==null||game.getName()==null){
                 return CompletableFuture.failedFuture
@@ -30,7 +31,7 @@ public class OnlineGameNameService {
             return CompletableFuture.completedFuture(game.getName());
         }catch (HttpClientErrorException ex){
             return CompletableFuture.failedFuture
-                    (new GameSessionException(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME));
+                    (new GameSessionException(GameSessionException.GameSessionErrorCode.GET_GAME_FAIL));
         }
 
     }

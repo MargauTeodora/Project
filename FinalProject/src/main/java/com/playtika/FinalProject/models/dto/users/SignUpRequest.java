@@ -1,25 +1,14 @@
-package com.playtika.FinalProject.models.dto;
+package com.playtika.FinalProject.models.dto.users;
 
 import com.playtika.FinalProject.utils.CustomTime;
 
-public class UserInfoDTO {
+public class SignUpRequest {
     private String userName;
-    private String email;
     private String firstName;
     private String lastName;
-    private CustomTime maximumDailyPlayTime=new CustomTime(0,0);
-
-
-    public UserInfoDTO(String userName, String email, String firstName, String lastName, CustomTime maximumDailyPlayTime) {
-        this.userName = userName;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.maximumDailyPlayTime = maximumDailyPlayTime;
-    }
-
-    public UserInfoDTO() {
-    }
+    private String email;
+    private String password;
+    private CustomTime maximumDailyPlayTime;
 
     public CustomTime getMaximumDailyPlayTime() {
         return maximumDailyPlayTime;
@@ -43,6 +32,14 @@ public class UserInfoDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFirstName() {

@@ -3,14 +3,18 @@ package com.playtika.FinalProject.services;
 import com.playtika.FinalProject.exceptions.UserException;
 import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
 import com.playtika.FinalProject.models.GameSession;
-import com.playtika.FinalProject.models.dto.*;
 import com.playtika.FinalProject.models.Role;
 import com.playtika.FinalProject.models.RoleType;
 import com.playtika.FinalProject.models.User;
+import com.playtika.FinalProject.models.dto.game.GameSessionInfoDTO;
+import com.playtika.FinalProject.models.dto.users.LoginResponse;
+import com.playtika.FinalProject.models.dto.users.SignUpRequest;
+import com.playtika.FinalProject.models.dto.users.UpdateUserDTO;
+import com.playtika.FinalProject.models.dto.users.UserInfoDTO;
 import com.playtika.FinalProject.repositories.RoleRepository;
 import com.playtika.FinalProject.repositories.UserRepository;
 import com.playtika.FinalProject.security.services.JwtTokenService;
-import org.apache.juli.logging.Log;
+import com.playtika.FinalProject.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +110,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void removeUser(String userName) {
-        actualUser = userRepository.findByUsername(getActualUserName());
+        actualUser = userRepository.findByUsername(HelperService.getActualUserName());
         if (!actualUser.isManager()) {
             throw new UserException(UserErrorCode.NO_PERMISSION);
         }
@@ -120,8 +124,27 @@ public class UserService implements UserDetailsService {
         userRepository.deleteByUsername(userName);
     }
 
+
+    public UserInfoDTO getUserInfo() {
+        actualUser = userRepository.findByUsername(HelperService.getActualUserName());
+        if (actualUser == null) {
+            throw new UserException(UserErrorCode.NOT_AUTHORIZED);
+        }
+        return new UserInfoDTO(actualUser.getUsername(), actualUser.getEmail(), actualUser.getFirstName(), actualUser.getLastName(),
+                actualUser.getMaximumDailyPlayTime());
+    }
+
+    public List<GameSessionInfoDTO> getGameSession() {
+        actualUser = userRepository.findByUsername(HelperService.getActualUserName());
+        if (actualUser == null) {
+            throw new UserException(UserErrorCode.NOT_AUTHORIZED);
+        }
+        return convertGameSessionToDTOList(actualUser.getGameSessions());
+    }
+
+
     public void updateUser(UpdateUserDTO userFromBody) {
-        actualUser = userRepository.findByUsername(getActualUserName());
+        actualUser = userRepository.findByUsername(HelperService.getActualUserName());
         User userToUpdate = getUserToUpdate(userFromBody);
         if (!isSameUser(userToUpdate)) {
             if (hasNoPermission(userToUpdate)) {
@@ -134,26 +157,15 @@ public class UserService implements UserDetailsService {
         this.userRepository.saveAndFlush(userToUpdate);
     }
 
-
-    public List<User> getAllUser(Pageable pageable) {
-        return userRepository.findAll(pageable).toList();
-    }
-
-    public UserInfoDTO getUserInfo() {
-        actualUser = userRepository.findByUsername(getActualUserName());
+    private User getUserToUpdate(UpdateUserDTO userFromBody) {
         if (actualUser == null) {
             throw new UserException(UserErrorCode.NOT_AUTHORIZED);
         }
-        return new UserInfoDTO(actualUser.getUsername(), actualUser.getEmail(), actualUser.getFirstName(), actualUser.getLastName(),
-                actualUser.getMaximumDailyPlayTime());
-    }
-
-    public List<GameSessionInfoDTO> getGameSession() {
-        actualUser = userRepository.findByUsername(getActualUserName());
-        if (actualUser == null) {
-            throw new UserException(UserErrorCode.NOT_AUTHORIZED);
+        User userToUpdate = userRepository.findByUsername(userFromBody.getUsername());
+        if (userToUpdate == null) {
+            throw new UserException(UserErrorCode.NO_UPDATE_USER);
         }
-        return convertGameSessionToDTOList(actualUser.getGameSessions());
+        return userToUpdate;
     }
 
 
@@ -209,37 +221,17 @@ public class UserService implements UserDetailsService {
         return roles;
     }
 
-    private User getUserToUpdate(UpdateUserDTO userFromBody) {
-        if (actualUser == null) {
-            throw new UserException(UserErrorCode.NOT_AUTHORIZED);
-        }
-        User userToUpdate = userRepository.findByUsername(userFromBody.getUsername());
-        if (userToUpdate == null) {
-            throw new UserException(UserErrorCode.NO_UPDATE_USER);
-        }
-        return userToUpdate;
-    }
-
 
     private List<GameSessionInfoDTO> convertGameSessionToDTOList(List<GameSession> gameSessions) {
         List<GameSessionInfoDTO> gameSessionInfoDTOList = new ArrayList<>();
         for (GameSession gameSession : gameSessions) {
             gameSessionInfoDTOList.add(new GameSessionInfoDTO(gameSession.getGameName()
-                    , convertDateToString(gameSession.getStartDate()), gameSession.getDuration()));
+                    , Converter.convertDateToString(gameSession.getStartDate()), gameSession.getDuration()));
         }
         return gameSessionInfoDTOList;
     }
 
-    private String convertDateToString(Date date) {
-        LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        return localDateTime.getDayOfMonth() + "/" + localDateTime.getMonthValue() + "/" + localDateTime.getYear();
-    }
 
-
-    private String getActualUserName() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth.getName();
-    }
 
     private boolean hasNoPermission(User userToProcess) {
         return (!actualUser.isAdmin() && (userToProcess.isAdmin()

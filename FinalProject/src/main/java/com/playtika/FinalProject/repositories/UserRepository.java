@@ -17,10 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Transactional
     void deleteByUsername(String username);
 
-    @Transactional
-    default void updateByUsername(String username){
-        User userToUpdate=findByUsername(username);
-    }
 
     @Override
     void delete(User user);

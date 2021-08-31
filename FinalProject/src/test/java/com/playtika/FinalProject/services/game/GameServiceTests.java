@@ -5,7 +5,7 @@ import com.playtika.FinalProject.exceptions.UserException;
 import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
 import com.playtika.FinalProject.models.GameSession;
 import com.playtika.FinalProject.models.User;
-import com.playtika.FinalProject.models.dto.GameSessionAddDTO;
+import com.playtika.FinalProject.models.dto.game.GameSessionAddDTO;
 import com.playtika.FinalProject.repositories.GameSessionRepository;
 import com.playtika.FinalProject.repositories.UserRepository;
 import com.playtika.FinalProject.security.services.JwtTokenService;
@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -39,25 +41,26 @@ public class GameServiceTests {
 
     @Autowired
     MockMvc mockMvc;
-    @MockBean
+
+    @Mock
     private GameSessionRepository gameSessionRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    AuthenticationManager authenticationManager;
-    //    @Mock
-    Authentication authentication;
+    private AuthenticationManager authenticationManager;
     @Mock
-    SecurityContext securityContext;
+    private Authentication authentication;
+    @Mock
+    private SecurityContext securityContext;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
-    UserService userService;
+    private GameSessionService gameSessionService;
 
-    @InjectMocks
-    GameSessionService gameSessionService;
-
-    User actualUser = mock(User.class);
-    GameSession gameSession = mock(GameSession.class);
+    private User actualUser = mock(User.class);
+    private GameSession gameSession = mock(GameSession.class);
 
     @Mock
     private JwtTokenService jwtTokenService;
@@ -73,7 +76,7 @@ public class GameServiceTests {
     @Test
     public void addGameSessionNotAuthenticatedTest() {
         actualUser.setUsername("user");
-        when(authentication.isAuthenticated()).thenReturn(true);
+        when(authentication.isAuthenticated()).thenReturn(false);
         when(authentication.getName()).thenReturn("user");
         when(userRepository.findByUsername("user")).thenReturn(null);
         try {
@@ -86,6 +89,7 @@ public class GameServiceTests {
 
     @Test
     public void addGameSessionIsPlayingTest() {
+        actualUser.setUsername("user");
         when(authentication.getName()).thenReturn("user");
         when(userRepository.findByUsername("user")).thenReturn(null);
         when(actualUser.isPlaying()).thenReturn(true);
@@ -98,13 +102,14 @@ public class GameServiceTests {
                     GameSessionException.GameSessionErrorCode.IS_PLAYING.getMessage());
         }
     }
+
     @Test
     public void stopGameSessionNotPlaying() {
         when(authentication.getName()).thenReturn("user");
         when(userRepository.findByUsername("user")).thenReturn(actualUser);
         actualUser.setUsername("user");
         when(actualUser.isPlaying()).thenReturn(false);
-        verify(actualUser,times(0)).getGameSessions();
+        verify(actualUser, times(0)).getGameSessions();
     }
 
     @Test
@@ -113,12 +118,45 @@ public class GameServiceTests {
         when(userRepository.findByUsername("user")).thenReturn(actualUser);
         actualUser.setUsername("user");
         when(actualUser.getGameSessions()).thenReturn(new ArrayList<>());
-        try{
+        try {
             gameSessionService.stop();
-        }catch (GameSessionException  ex){
+        } catch (GameSessionException ex) {
             Assertions.assertEquals(ex.getUserErrorCode().getMessage(),
                     GameSessionException.GameSessionErrorCode.NO_ACTIVE_GAME.getMessage());
         }
+    }
+
+    @Test
+    public void addGameSessionCorrect() {
+        GameSessionAddDTO gameSessionAddDTO = new GameSessionAddDTO();
+        gameSessionAddDTO.setGameName("game");
+        gameSessionAddDTO.setUser(actualUser);
+
+        doNothing().when(actualUser).setExceedingDailyPlayTime(true);
+
+        when(authentication.getName()).thenReturn("user");
+        when(userRepository.findByUsername("user")).thenReturn(actualUser);
+        actualUser.setUsername("user");
+        doNothing().when(actualUser).setExceedingDailyPlayTime(true);
+
+        when(actualUser.getMaximumDailyPlayTime()).thenReturn(new CustomTime(10, 10));
+        when(actualUser.getPlayedTime()).thenReturn(new CustomTime(11, 10));
+        when(actualUser.isExceedingDailyPlayTime()).thenReturn(true);
+        when(actualUser.isPlaying()).thenReturn(false);
+
+        doNothing().when(actualUser).setPlaying(true);
+
+        GameSession gameSession = new GameSession();
+        gameSession.setGameName(gameSessionAddDTO.getGameName());
+        gameSession.setStartDate(new Date());
+        gameSession.setUser(actualUser);
+        doNothing().when(actualUser).addGameSessions(gameSession);
+        when(userRepository.saveAndFlush(actualUser)).thenReturn(actualUser);
+        ResponseEntity responseEntity = gameSessionService.addGameSession(gameSessionAddDTO);
+
+        Assertions.assertEquals(responseEntity.getStatusCode(), HttpStatus.CONFLICT);
+
+
     }
 
 }

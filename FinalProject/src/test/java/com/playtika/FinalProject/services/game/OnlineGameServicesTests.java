@@ -24,7 +24,7 @@ public class OnlineGameServicesTests {
     @Test
     void testGetGameName(){
         Game game=new Game();
-        game.setName("name");
+        game.setName("game");
         when(restTemplate
                 .getForObject("https://rawg.io/api/games/name/?key=6e733e35e8ef43298200c1c79a6aa8d9",
                         Game.class)).thenReturn(game);

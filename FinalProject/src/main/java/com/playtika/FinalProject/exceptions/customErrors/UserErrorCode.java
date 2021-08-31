@@ -15,6 +15,7 @@ public enum UserErrorCode {
     INCORRECT_EMAIL(109,"Invalid email! "),
     INCORRECT_PASSWORD(110,"Invalid password! "),
     NOT_ALLOWED(111," You cannot do that! "),
+    UNDEFINED_ROLE(112,"Role is undefined! Try with [ROLE_MANAGER, ROLE_ADMIN, ROLE_REGULAR_USER]"),
     ;
 
 

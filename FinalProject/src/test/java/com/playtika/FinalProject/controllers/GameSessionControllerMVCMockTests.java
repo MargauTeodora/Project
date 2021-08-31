@@ -3,7 +3,7 @@ package com.playtika.FinalProject.controllers;
 
 import com.playtika.FinalProject.exceptions.GameSessionException;
 import com.playtika.FinalProject.externalAPI.OnlineGameNameService;
-import com.playtika.FinalProject.models.dto.GameSessionAddDTO;
+import com.playtika.FinalProject.models.dto.game.GameSessionAddDTO;
 import com.playtika.FinalProject.services.GameSessionService;
 import com.playtika.FinalProject.utils.BodyMessage;
 import com.playtika.FinalProject.utils.Converter;

@@ -41,16 +41,13 @@ public class GameSessionControllerMVCMockTests {
 
     @MockBean
     GameSessionService gameSessionService;
+
     @MockBean
     OnlineGameNameService onlineGameNameService;
 
     @Test
     void addGameSessionCorrectTest() throws Exception {
-        doAnswer(new Answer() {
-            public Object answer(InvocationOnMock invocation) {
-                return CompletableFuture.completedFuture("game-test");
-            }
-        }).when(onlineGameNameService).getGameName(any());
+        doAnswer(invocation -> CompletableFuture.completedFuture("game-test")).when(onlineGameNameService).getGameName(any());
         GameSessionAddDTO gameSessionDTO = new GameSessionAddDTO();
         when(gameSessionService.addGameSession(gameSessionDTO))
                 .thenReturn(new ResponseEntity(new BodyMessage("Successful adding GAME SESSION"), HttpStatus.OK));

@@ -46,7 +46,7 @@ public class GameSessionService {
 
     public ResponseEntity addGameSession(GameSessionAddDTO request) {
         actualUser = userRepository.findByUsername(getActualUserName());
-        if (jwtTokenService.getValidity().compareTo(new Date()) == -1 || actualUser == null) {
+        if (actualUser == null) {
             throw new UserException(UserErrorCode.NOT_AUTHORIZED);
         }
         if (actualUser.isPlaying()) {
@@ -69,11 +69,12 @@ public class GameSessionService {
 
     public void stop() {
         actualUser = userRepository.findByUsername(getActualUserName());
-        if (actualUser.isPlaying()) {
-            int len = actualUser.getGameSessions().size() - 1;
-            actualUser.getGameSessions().set(len, updateDuration(len));
-            actualUser.setPlaying(false);
+        if (!actualUser.isPlaying()) {
+            throw new GameSessionException(GameSessionException.GameSessionErrorCode.NO_ACTIVE_GAME);
         }
+        int len = actualUser.getGameSessions().size() - 1;
+        actualUser.getGameSessions().set(len, updateDuration(len));
+        actualUser.setPlaying(false);
         userRepository.saveAndFlush(actualUser);
     }
 

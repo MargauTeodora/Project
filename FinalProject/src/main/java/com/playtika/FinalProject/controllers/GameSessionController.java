@@ -23,15 +23,11 @@ public class GameSessionController extends ExceptionsController {
     OnlineGameNameService onlineGameNameService;
 
     @PostMapping(value = "/gamesession/add")
-    public ResponseEntity addSession(@RequestBody GameSessionAddDTO gameSessionDTO) {
-        try {
+    public ResponseEntity addSession(@RequestBody GameSessionAddDTO gameSessionDTO) throws ExecutionException, InterruptedException {
             String name = onlineGameNameService.getGameName(gameSessionDTO.getGameName()).get();
             if (name == null || name.isEmpty()) {
                 throw new GameSessionException(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME);
             }
-        } catch (InterruptedException | ExecutionException e) {
-            throw new GameSessionException(GameSessionException.GameSessionErrorCode.GET_GAME_FAIL);
-        }
         return gameSessionService.addGameSession(gameSessionDTO);
     }
 

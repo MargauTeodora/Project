@@ -11,10 +11,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,13 +59,16 @@ public class User {
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;
+    private List<Role> roles=new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<GameSession> gameSessions;
 
     public List<GameSession> getGameSessions() {
+        if(this.gameSessions==null){
+            this.gameSessions=new ArrayList<>();
+        }
         return gameSessions;
     }
 
@@ -81,7 +81,12 @@ public class User {
     }
 
     public void setGameSessions(List<GameSession> gameSessions) {
-        this.gameSessions = gameSessions;
+        if(gameSessions!=null){
+            this.gameSessions = gameSessions;
+        }else{
+            this.gameSessions=new ArrayList<>();
+        }
+
     }
 
     public void addGameSessions(GameSession gameSession) {
@@ -150,10 +155,8 @@ public class User {
     }
 
     public User setPassword(String password) {
-//        if(password!=null){
             validatePassword(password);
             this.password = password;
-//        }
         return this;
     }
 

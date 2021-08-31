@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class CustomTime implements Comparable{
+public class CustomTime implements Comparable,Cloneable{
 
     @Column(name = "duration_hour")
     private int hour;
@@ -56,4 +56,9 @@ public class CustomTime implements Comparable{
         sb.append('}');
         return sb.toString();
     }
+
+//    @Override
+//    public Object clone(){
+//        return new CustomTime(this.hour,this.minutes);
+//    }
 }

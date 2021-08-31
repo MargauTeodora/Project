@@ -17,6 +17,7 @@ public class GameSessionException extends RuntimeException{
          IS_PLAYING(504,"You already are in a game! Stop that session and come back!"),
          NONEXISTENT_GAME(505,"This game is not available!"),
          GET_GAME_FAIL(506,"Cannot get game! Session was interrupted"),
+         NO_ACTIVE_GAME(507,"There is no active game !"),
         ;
         private int code;
         private String message;

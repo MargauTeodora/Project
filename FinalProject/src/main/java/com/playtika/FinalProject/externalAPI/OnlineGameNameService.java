@@ -23,12 +23,15 @@ public class OnlineGameNameService {
         Game game=null;
         try{
             game = restTemplate.getForObject(URL+slug+"?key="+key, Game.class);
+            if(game==null||game.getName()==null){
+                return CompletableFuture.failedFuture
+                        (new GameSessionException(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME));
+            }
+            return CompletableFuture.completedFuture(game.getName());
         }catch (HttpClientErrorException ex){
-            return CompletableFuture.failedFuture(new GameSessionException(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME));
+            return CompletableFuture.failedFuture
+                    (new GameSessionException(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME));
         }
-        if(game==null||game.getName()==null){
-            return CompletableFuture.failedFuture(new GameSessionException(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME));
-        }
-        return CompletableFuture.completedFuture(game.getName());
+
     }
 }

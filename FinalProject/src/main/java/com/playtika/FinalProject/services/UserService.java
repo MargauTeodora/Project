@@ -90,13 +90,17 @@ public class UserService implements UserDetailsService {
         if (userRepository.existsByUsername(request.getUserName())) {
             throw new UserException(UserErrorCode.USER_EXISTS);
         }
-        User user = new User().setUsername(request.getUserName())
-                .setPassword(passwordEncoder.encode(request.getPassword()))
-                .setEmail(request.getEmail())
-                .setFirstName(request.getFirstName())
-                .setLastName(request.getLastName())
-                .setMaximumDailyPlayTime(request.getMaximumDailyPlayTime())
-                .setRoles(Arrays.asList(roleRepository.findByName(RoleType.ROLE_REGULAR_USER.name())));
+        User user = new User();
+        user.setUsername(request.getUserName());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        if (request.getMaximumDailyPlayTime() != null) {
+            user.setMaximumDailyPlayTime(request.getMaximumDailyPlayTime());
+        }
+
+        user.setRoles(Arrays.asList(roleRepository.findByName(RoleType.ROLE_REGULAR_USER.name())));
         user = userRepository.saveAndFlush(user);
         return user;
     }
@@ -130,6 +134,29 @@ public class UserService implements UserDetailsService {
         this.userRepository.saveAndFlush(userToUpdate);
     }
 
+
+    public List<User> getAllUser(Pageable pageable) {
+        return userRepository.findAll(pageable).toList();
+    }
+
+    public UserInfoDTO getUserInfo() {
+        actualUser = userRepository.findByUsername(getActualUserName());
+        if (actualUser == null) {
+            throw new UserException(UserErrorCode.NOT_AUTHORIZED);
+        }
+        return new UserInfoDTO(actualUser.getUsername(), actualUser.getEmail(), actualUser.getFirstName(), actualUser.getLastName(),
+                actualUser.getMaximumDailyPlayTime());
+    }
+
+    public List<GameSessionInfoDTO> getGameSession() {
+        actualUser = userRepository.findByUsername(getActualUserName());
+        if (actualUser == null) {
+            throw new UserException(UserErrorCode.NOT_AUTHORIZED);
+        }
+        return convertGameSessionToDTOList(actualUser.getGameSessions());
+    }
+
+
     private void updateAllowedField(UpdateUserDTO userFromBody, User userToUpdate) {
         if (userFromBody.getFirstName() != null) {
             userToUpdate.setFirstName(userFromBody.getFirstName());
@@ -153,7 +180,7 @@ public class UserService implements UserDetailsService {
         List<Role> roles = updateUserToAdmin(userFromBody);
         if (roles.isEmpty()) {
             roles = updateUserToManager(userFromBody);
-            if (roles == null || roles.isEmpty()) {
+            if (roles.isEmpty()) {
                 roles = new ArrayList<>();
             }
         }
@@ -194,27 +221,6 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public List<User> getAllUser(Pageable pageable) {
-        return userRepository.findAll(pageable).toList();
-    }
-
-    public UserInfoDTO getUserInfo() {
-        actualUser = userRepository.findByUsername(getActualUserName());
-        if (actualUser == null) {
-            throw new UserException(UserErrorCode.NOT_AUTHORIZED);
-        }
-        return new UserInfoDTO(actualUser.getUsername(), actualUser.getEmail(), actualUser.getFirstName(), actualUser.getLastName(),
-                actualUser.getMaximumDailyPlayTime());
-    }
-
-    public List<GameSessionInfoDTO> getGameSession() {
-        actualUser = userRepository.findByUsername(getActualUserName());
-        if (actualUser == null) {
-            throw new UserException(UserErrorCode.NOT_AUTHORIZED);
-        }
-        return convertGameSessionToDTOList(actualUser.getGameSessions());
-    }
-
     private List<GameSessionInfoDTO> convertGameSessionToDTOList(List<GameSession> gameSessions) {
         List<GameSessionInfoDTO> gameSessionInfoDTOList = new ArrayList<>();
         for (GameSession gameSession : gameSessions) {
@@ -242,15 +248,15 @@ public class UserService implements UserDetailsService {
     }
 
     private boolean hasNoPermissionToDelete(User userToProcess) {
-        boolean tryToDeleteMyself=actualUser.isAdmin()&&isSameUser(userToProcess);
-        return (tryToDeleteMyself||!actualUser.isAdmin() &&
+        boolean tryToDeleteMyself = actualUser.isAdmin() && isSameUser(userToProcess);
+        return (tryToDeleteMyself || !actualUser.isAdmin() &&
                 (userToProcess.isAdmin()
-                || userToProcess.isManager()));
+                        || userToProcess.isManager()));
     }
+
     private boolean isSameUser(User userToProcess) {
         return actualUser.equals(userToProcess);
     }
-
 
 
 }

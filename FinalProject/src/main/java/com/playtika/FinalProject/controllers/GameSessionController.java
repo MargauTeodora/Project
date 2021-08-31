@@ -7,6 +7,7 @@ import com.playtika.FinalProject.services.GameSessionService;
 import com.playtika.FinalProject.utils.BodyMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +24,15 @@ public class GameSessionController extends ExceptionsController {
     OnlineGameNameService onlineGameNameService;
 
     @PostMapping(value = "/gamesession/add")
-    public ResponseEntity addSession(@RequestBody GameSessionAddDTO gameSessionDTO) throws ExecutionException, InterruptedException {
-            String name = onlineGameNameService.getGameName(gameSessionDTO.getGameName()).get();
-            if (name == null || name.isEmpty()) {
-                throw new GameSessionException(GameSessionException.GameSessionErrorCode.NONEXISTENT_GAME);
-            }
-        return gameSessionService.addGameSession(gameSessionDTO);
+    public ResponseEntity addSession(@RequestBody GameSessionAddDTO gameSessionDTO){
+             try{
+                 String name = onlineGameNameService.getGameName(gameSessionDTO.getGameName()).get();
+                 if (name == null || name.isEmpty()) {
+                     return new ResponseEntity("Game not found", HttpStatus.NOT_FOUND);
+                 }return gameSessionService.addGameSession(gameSessionDTO);
+             }catch (GameSessionException | InterruptedException | ExecutionException ex){
+                 return new ResponseEntity(new BodyMessage(ex.getMessage()),HttpStatus.NOT_FOUND);
+             }
     }
 
     @PostMapping(value = "/gamesession/stop")

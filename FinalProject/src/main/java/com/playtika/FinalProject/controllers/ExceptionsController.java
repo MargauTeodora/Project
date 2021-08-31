@@ -30,8 +30,7 @@ public class ExceptionsController {
         }
         if(ex instanceof ExecutionException || ex instanceof InterruptedException){
             return new ErrorMessage(GameSessionException.GameSessionErrorCode.GET_GAME_FAIL
-                    .getMessage(),
-                    GameSessionException.GameSessionErrorCode.GET_GAME_FAIL.getCode());
+                    .getMessage(),HttpStatus.NOT_FOUND.value());
         }
         return new ErrorMessage(ex.getMessage(),404);
     }

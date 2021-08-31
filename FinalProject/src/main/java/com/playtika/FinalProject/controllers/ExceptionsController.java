@@ -28,10 +28,6 @@ public class ExceptionsController {
             return new ErrorMessage(UserErrorCode.NO_PERMISSION.getMessage(),
                     UserErrorCode.NO_PERMISSION.getCode());
         }
-        if(ex instanceof ExecutionException || ex instanceof InterruptedException){
-            return new ErrorMessage(GameSessionException.GameSessionErrorCode.GET_GAME_FAIL
-                    .getMessage(),HttpStatus.NOT_FOUND.value());
-        }
         return new ErrorMessage(ex.getMessage(),404);
     }
 }

@@ -24,15 +24,22 @@ public class GameSessionController extends ExceptionsController {
     OnlineGameNameService onlineGameNameService;
 
     @PostMapping(value = "/gamesession/add")
-    public ResponseEntity addSession(@RequestBody GameSessionAddDTO gameSessionDTO){
-             try{
-                 String name = onlineGameNameService.getGameName(gameSessionDTO.getGameName()).get();
-                 if (name == null || name.isEmpty()) {
-                     return new ResponseEntity("Game not found", HttpStatus.NOT_FOUND);
-                 }return gameSessionService.addGameSession(gameSessionDTO);
-             }catch (GameSessionException | InterruptedException | ExecutionException ex){
-                 return new ResponseEntity(new BodyMessage(ex.getMessage()),HttpStatus.NOT_FOUND);
-             }
+    public ResponseEntity addSession(@RequestBody GameSessionAddDTO gameSessionDTO) {
+        try {
+            String name = null;
+            try {
+                name = onlineGameNameService.getGameName(gameSessionDTO.getGameName()).get();
+            } catch (InterruptedException | ExecutionException ex) {
+                return new ResponseEntity(new BodyMessage(ex.getMessage()), HttpStatus.NOT_FOUND);
+            }
+            if (name == null || name.isEmpty()) {
+                return new ResponseEntity("Game not found", HttpStatus.NOT_FOUND);
+            }
+            return gameSessionService.addGameSession(gameSessionDTO);
+        } catch (GameSessionException ex) {
+            return ResponseEntity.ok(new BodyMessage(ex.getMessage()));
+        }
+
     }
 
     @PostMapping(value = "/gamesession/stop")

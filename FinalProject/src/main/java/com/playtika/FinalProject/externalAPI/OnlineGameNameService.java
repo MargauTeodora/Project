@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class OnlineGameNameService {
     RestTemplate restTemplate;
+    //            https://rawg.io/api/games/+nume?key=6e733e35e8ef43298200c1c79a6aa8d9
     public static final String URL = "https://rawg.io/api/games/";
     public static final String key = "6e733e35e8ef43298200c1c79a6aa8d9";
     public OnlineGameNameService(RestTemplateBuilder restTemplate) {
@@ -22,7 +23,6 @@ public class OnlineGameNameService {
         String slug=gameName.replace(" ","-");
         Game game=null;
         try{
-//            https://rawg.io/api/games/+nume?key=6e733e35e8ef43298200c1c79a6aa8d9
             game = restTemplate.getForObject(URL+slug+"?key="+key, Game.class);
             if(game==null||game.getName()==null){
                 return CompletableFuture.failedFuture

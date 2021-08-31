@@ -3,9 +3,10 @@ package com.playtika.FinalProject.services;
 import com.playtika.FinalProject.exceptions.GameSessionException;
 import com.playtika.FinalProject.exceptions.UserException;
 import com.playtika.FinalProject.exceptions.customErrors.UserErrorCode;
+import com.playtika.FinalProject.utils.Converter;
 import com.playtika.FinalProject.utils.CustomTime;
 import com.playtika.FinalProject.models.GameSession;
-import com.playtika.FinalProject.models.dto.AddNewGameSessionDTO;
+import com.playtika.FinalProject.models.dto.GameSessionAddDTO;
 import com.playtika.FinalProject.repositories.GameSessionRepository;
 import com.playtika.FinalProject.models.User;
 import com.playtika.FinalProject.repositories.UserRepository;
@@ -14,7 +15,6 @@ import com.playtika.FinalProject.utils.BodyMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +32,6 @@ import java.util.List;
 @Service
 public class GameSessionService {
 
-    private static Logger logger = LoggerFactory.getLogger(UserService.class);
     User actualUser;
 
     @Autowired
@@ -46,9 +44,8 @@ public class GameSessionService {
     private UserRepository userRepository;
 
 
-    public ResponseEntity addGameSession(AddNewGameSessionDTO request) {
+    public ResponseEntity addGameSession(GameSessionAddDTO request) {
         actualUser = userRepository.findByUsername(getActualUserName());
-        logger.info(jwtTokenService.getValidity().toString());
         if (jwtTokenService.getValidity().compareTo(new Date()) == -1 || actualUser == null) {
             throw new UserException(UserErrorCode.NOT_AUTHORIZED);
         }
@@ -62,8 +59,6 @@ public class GameSessionService {
         gameSession.setUser(actualUser);
         actualUser.addGameSessions(gameSession);
         userRepository.saveAndFlush(actualUser);
-        logger.info(actualUser.getPlayedTime().toString());
-        logger.info(actualUser.getGameSessions().size() + "");
         actualUser.setExceedingDailyPlayTime(actualUser.getMaximumDailyPlayTime().compareTo(actualUser.getPlayedTime()) == -1);
         if (actualUser.isExceedingDailyPlayTime()) {
             return new ResponseEntity
@@ -86,19 +81,13 @@ public class GameSessionService {
 
         GameSession activeGameSession = actualUser.getGameSessions().get(len);
         Date startDay = activeGameSession.getStartDate();
-        LocalDateTime test = convertToLocalDateTime(startDay);
-        LocalDateTime test2 = convertToLocalDateTime(new Date());
+        LocalDateTime test = Converter.convertToLocalDateTime(startDay);
+        LocalDateTime test2 = Converter.convertToLocalDateTime(new Date());
 
         long hour2 = ChronoUnit.HOURS.between(test, test2);
         long minutes = ChronoUnit.MINUTES.between(test, test2) - hour2 * 60;
         activeGameSession.setDuration(new CustomTime((int) hour2, (int) minutes));
         return activeGameSession;
-    }
-
-    public LocalDateTime convertToLocalDateTime(Date dateToConvert) {
-        return dateToConvert.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
     }
 
     public List<GameSession> getAllGameSessions(Pageable pageable) {

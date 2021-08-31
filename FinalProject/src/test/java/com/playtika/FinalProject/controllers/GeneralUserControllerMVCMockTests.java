@@ -3,7 +3,7 @@ package com.playtika.FinalProject.controllers;
 import com.playtika.FinalProject.models.User;
 import com.playtika.FinalProject.models.dto.*;
 import com.playtika.FinalProject.services.UserService;
-import com.playtika.FinalProject.utils.Convert;
+import com.playtika.FinalProject.utils.Converter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -42,7 +41,7 @@ public class GeneralUserControllerMVCMockTests {
         when(userService.login(any(), any())).thenReturn(new LoginResponse());
         MvcResult result = mockMvc.perform(get("/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(Convert.asJSONString(new LoginRequest())))
+                .content(Converter.asJSONString(new LoginRequest())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -53,7 +52,7 @@ public class GeneralUserControllerMVCMockTests {
         when(userService.login(any(), any())).thenReturn(null);
         MvcResult result = mockMvc.perform(get("/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(Convert.asJSONString(new LoginRequest())))
+                .content(Converter.asJSONString(new LoginRequest())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().is(412))
                 .andReturn();
@@ -66,7 +65,7 @@ public class GeneralUserControllerMVCMockTests {
         when(userService.signUp(any())).thenReturn(new User());
         MvcResult result = mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(Convert.asJSONString(new SignUpRequest())))
+                .content(Converter.asJSONString(new SignUpRequest())))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -106,7 +105,7 @@ public class GeneralUserControllerMVCMockTests {
         doNothing().when(userService).updateUser(userDTO);
         MvcResult result = mockMvc.perform(patch("/user/update")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(Convert.asJSONString(userDTO)))
+                .content(Converter.asJSONString(userDTO)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andReturn();

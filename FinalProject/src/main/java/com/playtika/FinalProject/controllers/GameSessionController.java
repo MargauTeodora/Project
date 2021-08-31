@@ -2,7 +2,7 @@ package com.playtika.FinalProject.controllers;
 
 import com.playtika.FinalProject.exceptions.GameSessionException;
 import com.playtika.FinalProject.externalAPI.OnlineGameNameService;
-import com.playtika.FinalProject.models.dto.AddNewGameSessionDTO;
+import com.playtika.FinalProject.models.dto.GameSessionAddDTO;
 import com.playtika.FinalProject.services.GameSessionService;
 import com.playtika.FinalProject.utils.BodyMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class GameSessionController extends ExceptionsController {
     OnlineGameNameService onlineGameNameService;
 
     @PostMapping(value = "/gamesession/add")
-    public ResponseEntity addSession(@RequestBody AddNewGameSessionDTO gameSessionDTO) {
+    public ResponseEntity addSession(@RequestBody GameSessionAddDTO gameSessionDTO) {
         try {
             String name = onlineGameNameService.getGameName(gameSessionDTO.getGameName()).get();
             if (name == null || name.isEmpty()) {

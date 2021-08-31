@@ -42,7 +42,7 @@ public class SetupRoles implements ApplicationListener<ContextRefreshedEvent> {
         final Role managerRole = createRoleIfNotFound(RoleType.ROLE_MANAGER.name());
 
         // == create initial user
-        createUserIfNotFound("admin@test.com", "admin", "Admin",
+        createUserIfNotFound("adminul@test.com", "adminul", "Admin",
                 "Admin", "1234", new ArrayList<>(Arrays.asList(adminRole,regularUserRole,managerRole)));
 
         setupComplete = true;
@@ -70,6 +70,7 @@ public class SetupRoles implements ApplicationListener<ContextRefreshedEvent> {
             user.setEmail(email);
         }
         user = userRepository.saveAndFlush(user);
+
         user.setRoles(roles);
         user = userRepository.save(user);
         return user;

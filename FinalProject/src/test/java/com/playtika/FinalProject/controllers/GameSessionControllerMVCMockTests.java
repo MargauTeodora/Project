@@ -3,10 +3,10 @@ package com.playtika.FinalProject.controllers;
 
 import com.playtika.FinalProject.exceptions.GameSessionException;
 import com.playtika.FinalProject.externalAPI.OnlineGameNameService;
-import com.playtika.FinalProject.models.dto.AddNewGameSessionDTO;
+import com.playtika.FinalProject.models.dto.GameSessionAddDTO;
 import com.playtika.FinalProject.services.GameSessionService;
 import com.playtika.FinalProject.utils.BodyMessage;
-import com.playtika.FinalProject.utils.Convert;
+import com.playtika.FinalProject.utils.Converter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -51,17 +51,16 @@ public class GameSessionControllerMVCMockTests {
                 return CompletableFuture.completedFuture("game-test");
             }
         }).when(onlineGameNameService).getGameName(any());
-        AddNewGameSessionDTO gameSessionDTO = new AddNewGameSessionDTO();
+        GameSessionAddDTO gameSessionDTO = new GameSessionAddDTO();
         when(gameSessionService.addGameSession(gameSessionDTO))
                 .thenReturn(new ResponseEntity(new BodyMessage("Successful adding GAME SESSION"), HttpStatus.OK));
         MvcResult result = mockMvc.perform(post("/gamesession/add")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(Convert.asJSONString(gameSessionDTO)))
+                .content(Converter.asJSONString(gameSessionDTO)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andReturn();
     }
-//    NONEXISTENT_GAME
 
     @Test
     void addGameSessionEmptyGameNameTest() throws Exception {
@@ -70,12 +69,12 @@ public class GameSessionControllerMVCMockTests {
                 return CompletableFuture.completedFuture("");
             }
         }).when(onlineGameNameService).getGameName(any());
-        AddNewGameSessionDTO gameSessionDTO = new AddNewGameSessionDTO();
+        GameSessionAddDTO gameSessionDTO = new GameSessionAddDTO();
         when(gameSessionService.addGameSession(gameSessionDTO))
                 .thenReturn(new ResponseEntity(new BodyMessage("Successful adding GAME SESSION"), HttpStatus.OK));
         MvcResult result = mockMvc.perform(post("/gamesession/add")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(Convert.asJSONString(gameSessionDTO)))
+                .content(Converter.asJSONString(gameSessionDTO)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().is(412))
                 .andReturn();

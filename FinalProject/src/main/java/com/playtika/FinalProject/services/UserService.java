@@ -10,6 +10,7 @@ import com.playtika.FinalProject.models.User;
 import com.playtika.FinalProject.repositories.RoleRepository;
 import com.playtika.FinalProject.repositories.UserRepository;
 import com.playtika.FinalProject.security.services.JwtTokenService;
+import org.apache.juli.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +55,6 @@ public class UserService implements UserDetailsService {
     private AuthenticationManager authenticationManager;
 
 
-
-
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         final User user = userRepository.findByUsername(userName);
@@ -77,10 +76,11 @@ public class UserService implements UserDetailsService {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
             User user = userRepository.findByUsername(userName);
-            return new LoginResponse()
-                    .setEmail(user.getEmail())
-                    .setUserName(user.getUsername())
-                    .setAccessToken(jwtTokenService.createToken(userName, user.getRoles()));
+            LoginResponse loginResponse = new LoginResponse();
+            loginResponse.setEmail(user.getEmail());
+            loginResponse.setUserName(user.getUsername());
+            loginResponse.setAccessToken(jwtTokenService.createToken(userName, user.getRoles()));
+            return loginResponse;
         } catch (AuthenticationException e) {
             throw new UserException(UserErrorCode.INVALID_CREDENTIALS);
         }
@@ -103,7 +103,7 @@ public class UserService implements UserDetailsService {
 
     public void removeUser(String userName) {
         actualUser = userRepository.findByUsername(getActualUserName());
-        if (!actualUserIsManager()) {
+        if (!actualUser.isManager()) {
             throw new UserException(UserErrorCode.NO_PERMISSION);
         }
         if (!userRepository.existsByUsername(userName)) {
@@ -163,7 +163,7 @@ public class UserService implements UserDetailsService {
     }
 
     private List<Role> updateUserToAdmin(UpdateUserDTO userFromBody) {
-        if (userFromBody.isAdmin() && !actualUserIsAdmin()) {
+        if (userFromBody.isAdmin() && !actualUser.isAdmin()) {
             throw new UserException(UserErrorCode.NO_PERMISSION);
         }
         List<Role> roles = new ArrayList<>();
@@ -187,7 +187,7 @@ public class UserService implements UserDetailsService {
             throw new UserException(UserErrorCode.NOT_AUTHORIZED);
         }
         User userToUpdate = userRepository.findByUsername(userFromBody.getUsername());
-        if (userFromBody == null || userToUpdate == null) {
+        if (userToUpdate == null) {
             throw new UserException(UserErrorCode.NO_UPDATE_USER);
         }
         return userToUpdate;
@@ -236,14 +236,14 @@ public class UserService implements UserDetailsService {
     }
 
     private boolean hasNoPermission(User userToProcess) {
-        return (!actualUserIsAdmin() && (userToProcess.isAdmin()
+        return (!actualUser.isAdmin() && (userToProcess.isAdmin()
                 || userToProcess.isManager()
                 || !isSameUser(userToProcess)));
     }
 
     private boolean hasNoPermissionToDelete(User userToProcess) {
-        boolean tryToDeleteMyself=actualUserIsAdmin()&&isSameUser(userToProcess);
-        return (tryToDeleteMyself||!actualUserIsAdmin() &&
+        boolean tryToDeleteMyself=actualUser.isAdmin()&&isSameUser(userToProcess);
+        return (tryToDeleteMyself||!actualUser.isAdmin() &&
                 (userToProcess.isAdmin()
                 || userToProcess.isManager()));
     }
@@ -251,13 +251,6 @@ public class UserService implements UserDetailsService {
         return actualUser.equals(userToProcess);
     }
 
-    private boolean actualUserIsAdmin() {
-        return actualUser.isAdmin();
-    }
-
-    private boolean actualUserIsManager() {
-        return actualUser.isManager();
-    }
 
 
 }

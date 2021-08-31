@@ -1,8 +1,7 @@
 package com.playtika.FinalProject.models.dto;
 
 import com.playtika.FinalProject.models.User;
-
-public class AddNewGameSessionDTO {
+public class GameSessionAddDTO {
     private String gameName;
     private User user;
 

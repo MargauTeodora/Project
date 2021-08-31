@@ -150,8 +150,10 @@ public class User {
     }
 
     public User setPassword(String password) {
-        validatePassword(password);
-        this.password = password;
+//        if(password!=null){
+            validatePassword(password);
+            this.password = password;
+//        }
         return this;
     }
 
@@ -189,12 +191,12 @@ public class User {
 
     }
 
-    private void validateUsername(String email) {
+    private void validateUsername(String username) {
         String regex = "^[a-zA-Z]{4,}";
         Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(email);
+        Matcher matcher = pattern.matcher(username);
 
-        if (isEmptyString(email) || !matcher.find()) {
+        if (isEmptyString(username) || !matcher.find()) {
             throw new UserException(UserErrorCode.INCORRECT_USERNAME);
         }
     }
